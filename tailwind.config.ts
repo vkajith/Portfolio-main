@@ -24,6 +24,10 @@ export default {
       fontFamily: {
         inter: ['Inter', 'sans-serif'],
       },
+      backgroundImage: {
+        'grid-gray-900': 'linear-gradient(to right, rgb(17 24 39 / var(--tw-bg-opacity)) 1px, transparent 1px), linear-gradient(to bottom, rgb(17 24 39 / var(--tw-bg-opacity)) 1px, transparent 1px)',
+        'grid-white': 'linear-gradient(to right, rgb(255 255 255 / var(--tw-bg-opacity)) 1px, transparent 1px), linear-gradient(to bottom, rgb(255 255 255 / var(--tw-bg-opacity)) 1px, transparent 1px)',
+      },
     },
   },
   plugins: [],

@@ -57,3 +57,56 @@ body {
     @apply text-gray-950 dark:text-gray-50;
   }
 }
+
+/* Add this at the end of the file */
+section {
+  position: relative;
+}
+
+section::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.2), transparent);
+}
+
+section:last-child::after {
+  display: none;
+}
+
+.dark section::after {
+  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
+}
+
+/* Optional: Add subtle top decoration */
+section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
+}
+
+.dark section::before {
+  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.05), transparent);
+}
+
+/* Add subtle section transitions */
+section {
+  border-radius: 0;
+  transition: background-color 0.3s ease;
+}
+
+section:nth-child(odd) {
+  background-color: rgba(249, 250, 251, 0.5);
+}
+
+.dark section:nth-child(odd) {
+  background-color: rgba(17, 24, 39, 0.3);
+}

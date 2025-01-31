@@ -16,11 +16,7 @@ interface ExperienceItem
     description: string
 }
 
-const ExperienceCard = ({item, index 
-}: { 
-  item: ExperienceItem
-  index: number 
-}) => {
+const ExperienceCard = ({item, index}: { item: ExperienceItem; index: number }) => {
     return(
         <motion.div
         initial={{ opacity: 0, x: -50 }}
@@ -29,12 +25,12 @@ const ExperienceCard = ({item, index
         viewport={{ once: true }}
         className="flex gap-4 md:gap-6 relative"
       >
-            <div className="absolute left-6 top-[60px] bottom-0 w-px bg-gray-200" />
+            <div className="absolute left-6 top-[60px] bottom-0 w-px bg-gray-200 dark:bg-gray-700" />
             <div className="flex-shrink-0">
-                <div className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-white dark:bg-gray-800 shadow-lg flex items-center justify-center">
                     <Image 
                         src={item.logo}
-                        alt = {`${item.title} logo`}
+                        alt={`${item.title} logo`}
                         height={48}
                         width={50}
                         className="w-8 h-8 object-contain"
@@ -42,10 +38,10 @@ const ExperienceCard = ({item, index
                 </div>
             </div>
             <div className="pb-12">
-                <p className="text-sm text-gray-600 mb-1">{item.date}</p>
-                <h3 className="text-xl font-bold mb-1">{item.title}</h3>
-                <p className="text-gray-600 mb-2">{item.location}</p>
-                <p className="text-gray-700">{item.description}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">{item.date}</p>
+                <h3 className="text-xl font-bold mb-1 text-gray-900 dark:text-white">{item.title}</h3>
+                <p className="text-gray-600 dark:text-gray-400 mb-2">{item.location}</p>
+                <p className="text-gray-700 dark:text-gray-300">{item.description}</p>
             </div>
         </motion.div>
     )
@@ -73,7 +69,7 @@ const Experience = () => {
         <section id="experience" className="py-20 bg-gray-50 dark:bg-gray-900 sm:px-4">
             <div className="container mx-auto px-4 sm:px-6">
                 <div className="mb-12">
-                    <h2 className="text-3xl font-bold mb-2 text-gray-900">Experience</h2>
+                    <h2 className="text-3xl font-bold mb-2 text-gray-900 dark:text-white">Experience</h2>
                     <p className="text-gray-600 dark:text-gray-400">My professional journey so far 🚀</p>
                 </div>
                 <div className="max-w-3xl">
@@ -83,7 +79,7 @@ const Experience = () => {
                 </div>
             </div>
         </section>
-      )
+    )
 }
 
 export default Experience;

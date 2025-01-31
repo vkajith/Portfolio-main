@@ -25,25 +25,41 @@ const ParticleBackground = () => {
           events: {
             onHover: {
               enable: true,
-              mode: "repulse",
+              mode: ["grab", "connect"],
+            },
+            onClick: {
+              enable: true,
+              mode: "push",
             },
           },
           modes: {
-            repulse: {
-              distance: 100,
-              duration: 0.4,
+            grab: {
+              distance: 140,
+              links: {
+                opacity: 0.5,
+              },
+            },
+            connect: {
+              distance: 150,
+              links: {
+                opacity: 0.5,
+              },
+              radius: 60,
+            },
+            push: {
+              quantity: 4,
             },
           },
         },
         particles: {
           color: {
-            value: "#888888",
+            value: ["#6366f1", "#8b5cf6", "#d946ef"],
           },
           links: {
-            color: "#888888",
+            color: "#a5b4fc",
             distance: 150,
             enable: true,
-            opacity: 0.2,
+            opacity: 0.3,
             width: 1,
           },
           move: {
@@ -64,7 +80,7 @@ const ParticleBackground = () => {
             value: 80,
           },
           opacity: {
-            value: 0.2,
+            value: 0.5,
           },
           shape: {
             type: "circle",

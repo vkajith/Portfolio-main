@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { ThemeToggle } from './ThemeToggle'
 
 const Navbar = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [activeSection, setActiveSection] = useState('')
   const [isScrolled, setIsScrolled] = useState(false)
 
@@ -49,26 +50,30 @@ const Navbar = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            VK
+            <span className="bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">VK</span>
           </motion.a>
           
+          {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
             {['about', 'experience', 'projects', 'contact'].map((item) => (
-              <a
+              <motion.a
                 key={item}
                 href={`#${item}`}
                 className={`nav-link capitalize dark:text-gray-200 dark:hover:text-white ${
                   activeSection === item ? 'active' : ''
                 }`}
+                whileHover={{ y: -2 }}
+                transition={{ type: "spring", stiffness: 300 }}
               >
                 {item}
-              </a>
+              </motion.a>
             ))}
           </div>
 
           <div className="flex items-center space-x-4">
             <ThemeToggle />
             <motion.button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="md:hidden text-gray-900 dark:text-white"
               whileTap={{ scale: 0.95 }}
             >
@@ -78,6 +83,33 @@ const Navbar = () => {
             </motion.button>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        <motion.div
+          initial={false}
+          animate={{
+            height: isMenuOpen ? 'auto' : 0,
+            opacity: isMenuOpen ? 1 : 0
+          }}
+          className={`md:hidden overflow-hidden`}
+        >
+          <div className="py-4 space-y-4">
+            {['about', 'experience', 'projects', 'contact'].map((item) => (
+              <motion.a
+                key={item}
+                href={`#${item}`}
+                className={`block nav-link capitalize dark:text-gray-200 dark:hover:text-white ${
+                  activeSection === item ? 'active' : ''
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+                whileHover={{ x: 10 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                {item}
+              </motion.a>
+            ))}
+          </div>
+        </motion.div>
       </nav>
     </motion.header>
   )

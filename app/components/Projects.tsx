@@ -34,7 +34,7 @@ const Projects = () => {
       ]
     
     return(
-        <section id='projects' className="py-20 bg-white">
+        <section id='projects' className="py-20 bg-white dark:bg-gray-900">
             <div className="px-6">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -42,8 +42,8 @@ const Projects = () => {
                   transition={{ duration: 0.5 }}
                   viewport={{ once: true }}
                 >
-                    <h2 className="text-3xl font-bold mb-2">Projects</h2>
-                    <p className="text-gray-600 mb-12">Some things I&apos;ve built 🚀</p>
+                    <h2 className="text-3xl font-bold mb-2 text-gray-900">Projects</h2>
+                    <p className="text-gray-600 dark:text-gray-400 mb-12">Some things I&apos;ve built 🚀</p>
                 </motion.div>
                 <div className="grid md:grid-cols-2 gap-8">
                     {projects.map((project, index) => (

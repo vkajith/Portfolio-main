@@ -1,26 +1,28 @@
 import './globals.css'
-import { Inter } from 'next/font/google'
-import { Analytics } from '@vercel/analytics/next';
-
-const inter = Inter({ subsets: ['latin'] })
-
 export const metadata = {
   title: 'Vysyakh Ajith - Software Engineeer & Tech Enthusiast',
   description: 'Personal portfolio of Vysyakh Ajith - bringing design and engineering at same place',
 }
 
+import CustomCursor from './components/CustomCursor'
+import { ThemeProvider } from './providers/theme-provider'
+import { Analytics } from '@vercel/analytics/react'
+import './globals.css'
+
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} bg-white text-gray-900 overflow-x-hidden`} >
-        <div className='fixed inset-0 -z-10 bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:4rem_4rem]'/>
-        {children}
-        <Analytics />
+    <html lang="en" suppressHydrationWarning>
+      <body className="bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
+        <ThemeProvider>
+          <CustomCursor />
+          <main>{children}</main>
+          <Analytics />
+        </ThemeProvider>
       </body>
     </html>
-  );
+  )
 }

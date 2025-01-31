@@ -3,14 +3,14 @@
 import { FaReact, FaFileAlt, FaNodeJs } from "react-icons/fa";
 import { SiTypescript } from "react-icons/si";
 import FloatingElements from "./ui/floating-elements";
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion'
 
 const Hero = () => {
   return(
-    <section className="min-h-screen flex items-center justify-center relative">
+    <section className="min-h-screen flex items-center justify-center relative dark:bg-gray-900">
       <div className="absolute inset-0 pointer-events-none"> 
         <FloatingElements delay={0}>
-          <FaReact className="absolute top-20 left-[20%] text-gray-200 w-14 h-14"/>
+          <FaReact className="absolute top-20 left-[20%] text-gray-200 dark:text-gray-700 w-14 h-14"/>
         </FloatingElements>
         <FloatingElements delay={1}>
           <FaNodeJs className="absolute top-40 right-[25%] text-gray-200 w-12 h-12"/>
@@ -26,11 +26,11 @@ const Hero = () => {
           transition={{ duration: 0.5 }}
           className="px-2"
         >
-          <h1 className="text-5xl md:text-7xl font-bold mb-6">
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 dark:text-white">
             Hey, I&apos;m{' '}
             <span className="relative">
               Vysyakh
-              <span className="absolute bottom-2 left-0 w-full h-3 bg-yellow-200 -z-10 transform -rotate-2"></span>
+              <span className="absolute bottom-2 left-0 w-full h-3 bg-yellow-200 dark:bg-yellow-500 -z-10 transform -rotate-2"></span>
             </span>
           </h1>
         </motion.div>
@@ -40,7 +40,7 @@ const Hero = () => {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="px-2"
         >
-          <p className="text-xl md:text-2xl text-gray-600 mb-8">
+          <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8">
            Software Engineer & Tech Enthusiast 👨‍💻
           </p>
         </motion.div>

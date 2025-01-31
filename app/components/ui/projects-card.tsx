@@ -18,23 +18,14 @@ interface ProjectCardProps {
     }
   }
 
-const ProjectsCard = ({
-    title, 
-    description, 
-    date, 
-    image, 
-    technologies, 
-    type,
-    links 
-  }: ProjectCardProps) => {
-
+const ProjectsCard = ({ title, description, date, image, technologies, type, links }: ProjectCardProps) => {
     return(
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
-            className="flex flex-col bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow"
+            className="flex flex-col bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-shadow"
         >
             <div className="relative aspect-[16/9] max-w-full overflow-hidden rounded-t-xl">
                 <Image
@@ -45,9 +36,9 @@ const ProjectsCard = ({
                 />
             </div>
             <div className='flex flex-col p-6 flex-grow'>
-                <h3 className='text-2xl font-bold mb-2'>{title}</h3>
-                <p className="text-gray-600 text-sm mb-4">{date}</p>
-                <p className="text-gray-700 mb-6">{description}</p>
+                <h3 className='text-2xl font-bold mb-2 text-gray-900'>{title}</h3>
+                <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">{date}</p>
+                <p className="text-gray-700 dark:text-gray-300 mb-6">{description}</p>
                 <div className='flex flex-wrap gap-2 mb-6'>
                     {technologies.map((item,index) => (
                         <span 

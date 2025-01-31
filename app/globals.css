@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -14,8 +16,44 @@
   }
 }
 
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-gray-950 dark:text-gray-50 font-bold;
+  }
+}
+
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', sans-serif;
+}
+
+.nav-link {
+  @apply relative text-gray-950 dark:text-gray-100 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200 font-medium;
+}
+
+.nav-link::after {
+  @apply content-[''] absolute left-0 -bottom-1 w-0 h-0.5 bg-gray-950 dark:bg-gray-100 transition-all duration-300;
+}
+
+.nav-link:hover::after {
+  @apply w-full;
+}
+
+.nav-link.active::after {
+  @apply w-full;
+}
+
+@layer utilities {
+  .text-content {
+    @apply text-gray-700 dark:text-gray-300;
+  }
+  
+  .text-content-light {
+    @apply text-gray-600 dark:text-gray-400;
+  }
+  
+  .text-heading {
+    @apply text-gray-950 dark:text-gray-50;
+  }
 }

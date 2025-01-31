@@ -1,8 +1,8 @@
 'use client'
 
 import ProjectsCard from "./ui/projects-card"
-import HabitAct from "../img/habitact.png";
-import WhatsappUI from "../img/whatsapp-ui.png";
+import HabitAct from "../img/HabitAct.png";
+import WhatsappUI from "../img/WhatsappUI.png";
 import { motion } from "framer-motion"
 
 const Projects = () => {

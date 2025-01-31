@@ -1,8 +1,8 @@
 'use client'
 
 import ProjectsCard from "./ui/projects-card"
-import HabitAct from "/Users/anarock/Documents/GitHub/Portfolio-main/public/HabitAct.png";
-import WhatsappUI from "/Users/anarock/Documents/GitHub/Portfolio-main/public/WhatsappUI.png";
+import HabitAct from "../img/habitact.png";
+import WhatsappUI from "../img/whatsapp-ui.png";
 import { motion } from "framer-motion"
 
 const Projects = () => {

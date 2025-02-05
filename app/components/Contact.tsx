@@ -13,7 +13,7 @@ const SocialIcon = ({ href, icon: Icon }: { href: string; icon: IconType }) => (
     href={href}
     target="_blank"
     rel="noopener noreferrer"
-    className="text-gray-400 hover:text-gray-600 transition-colors"
+    className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
     whileHover={{ scale: 1.1 }}
     whileTap={{ scale: 0.9 }}
   >
@@ -37,7 +37,7 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="py-20 bg-gray-50">
+    <section id="contact" className="py-20 bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto px-6 max-w-5xl">
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Left Column */}
@@ -48,11 +48,11 @@ const Contact = () => {
             viewport={{ once: true }}
             className="space-y-6"
           >
-            <h2 className="text-4xl md:text-5xl font-bold">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white">
               Let&apos;s Connect!
             </h2>
-            <p className="text-lg text-gray-600">
-                If you&apos;d like to get in touch, feel free to connect with me via social media or send me a direct message here.
+            <p className="text-lg text-gray-600 dark:text-gray-300">
+              If you&apos;d like to get in touch, feel free to connect with me via social media or send me a direct message here.
             </p>
             <div className="flex gap-6">
               <SocialIcon 
@@ -82,34 +82,48 @@ const Contact = () => {
                 <input
                   type="text"
                   name="name"
-                  placeholder="name"
+                  placeholder="Name"
                   required
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-gray-400 focus:ring-0 transition-colors"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 
+                    bg-white dark:bg-gray-800 text-gray-900 dark:text-white 
+                    placeholder:text-gray-500 dark:placeholder:text-gray-400
+                    focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20
+                    transition-colors duration-200 ease-in-out"
                 />
               </div>
               <div>
                 <input
                   type="email"
                   name="email"
-                  placeholder="email"
+                  placeholder="Email"
                   required
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-gray-400 focus:ring-0 transition-colors"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 
+                    bg-white dark:bg-gray-800 text-gray-900 dark:text-white 
+                    placeholder:text-gray-500 dark:placeholder:text-gray-400
+                    focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20
+                    transition-colors duration-200 ease-in-out"
                 />
               </div>
               <div>
                 <textarea
                   name="message"
-                  placeholder="message"
+                  placeholder="Message"
                   required
                   rows={6}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-gray-400 focus:ring-0 transition-colors resize-none"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 
+                    bg-white dark:bg-gray-800 text-gray-900 dark:text-white 
+                    placeholder:text-gray-500 dark:placeholder:text-gray-400
+                    focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20
+                    transition-colors duration-200 ease-in-out resize-none"
                 />
               </div>
               <motion.button
                 type="submit"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full px-8 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
+                className="w-full px-8 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 
+                  rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
+                disabled={isLoading}
               >
                 {isLoading ? (
                   <svg className="animate-spin h-5 w-5 mx-auto" viewBox="0 0 24 24">
@@ -125,8 +139,7 @@ const Contact = () => {
         </div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default Contact
-
+export default Contact;

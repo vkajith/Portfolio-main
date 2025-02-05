@@ -61,6 +61,21 @@ const GitHubActivity = () => {
     }
   }
 
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  }
+
+  const item = {
+    hidden: { opacity: 0, x: -20 },
+    show: { opacity: 1, x: 0 }
+  }
+
   return (
     <section className="py-20 bg-gray-50 dark:bg-gray-800">
       <div className="container mx-auto px-6">
@@ -77,28 +92,37 @@ const GitHubActivity = () => {
 
         <div className="max-w-3xl mx-auto">
           {loading ? (
-            <div className="text-center">Loading...</div>
+            <div className="flex items-center justify-center space-x-2">
+              <div className="w-4 h-4 bg-gray-900 dark:bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+              <div className="w-4 h-4 bg-gray-900 dark:bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+              <div className="w-4 h-4 bg-gray-900 dark:bg-white rounded-full animate-bounce"></div>
+            </div>
           ) : (
-            activities.map((activity) => (
-              <motion.div
-                key={activity.id}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5 }}
-                viewport={{ once: true }}
-                className="bg-white dark:bg-gray-700 rounded-lg shadow-md p-4 mb-4 flex items-center"
-              >
-                <div className="mr-4 text-gray-600 dark:text-gray-300">
-                  {getEventIcon(activity.type)}
-                </div>
-                <div className="flex-grow">
-                  <h3 className="font-medium dark:text-white">{activity.repo.name}</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {activity.type.replace('Event', '')} on {formatDate(activity.created_at)}
-                  </p>
-                </div>
-              </motion.div>
-            ))
+            <motion.div
+              variants={container}
+              initial="hidden"
+              animate="show"
+              className="space-y-4"
+            >
+              {activities.map((activity) => (
+                <motion.div
+                  key={activity.id}
+                  variants={item}
+                  className="bg-white dark:bg-gray-700 rounded-lg shadow-md p-4 flex items-center
+                    transform transition-all duration-200 hover:scale-[1.02] hover:shadow-lg"
+                >
+                  <div className="mr-4 text-gray-600 dark:text-gray-300">
+                    {getEventIcon(activity.type)}
+                  </div>
+                  <div className="flex-grow">
+                    <h3 className="font-medium dark:text-white">{activity.repo.name}</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {activity.type.replace('Event', '')} on {formatDate(activity.created_at)}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
           )}
         </div>
       </div>

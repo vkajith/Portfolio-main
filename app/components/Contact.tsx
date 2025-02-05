@@ -23,16 +23,61 @@ const SocialIcon = ({ href, icon: Icon }: { href: string; icon: IconType }) => (
 
 const Contact = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
+  const [formErrors, setFormErrors] = useState({
+    name: '',
+    email: '',
+    message: ''
+  });
+
+  const validateForm = (formData: FormData) => {
+    const errors = {
+      name: '',
+      email: '',
+      message: ''
+    };
+    const name = formData.get('name') as string;
+    const email = formData.get('email') as string;
+    const message = formData.get('message') as string;
+
+    if (name.length < 2) {
+      errors.name = 'Name must be at least 2 characters long';
+    }
+    if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      errors.email = 'Please enter a valid email address';
+    }
+    if (message.length < 10) {
+      errors.message = 'Message must be at least 10 characters long';
+    }
+
+    return errors;
+  };
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
     const formData = new FormData(event.currentTarget);
-    await handleSubmit(formData);
-    setIsLoading(false);
-    if (formRef.current) {
-      formRef.current.reset(); // Clear the form fields
+    const errors = validateForm(formData);
+
+    if (Object.values(errors).some(error => error !== '')) {
+      setFormErrors(errors);
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      await handleSubmit(formData);
+      if (formRef.current) {
+        formRef.current.reset();
+      }
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 5000);
+      setFormErrors({ name: '', email: '', message: '' });
+    } catch (error) {
+      console.error('Error submitting form:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -78,44 +123,71 @@ const Contact = () => {
             viewport={{ once: true }}
           >
             <form ref={formRef} onSubmit={onSubmit} className="space-y-6">
-              <div>
+              <div className="space-y-1">
                 <input
                   type="text"
                   name="name"
                   placeholder="Name"
                   required
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 
+                  className={`w-full px-4 py-3 rounded-lg border ${formErrors.name ? 'border-red-500 dark:border-red-400' : 'border-gray-200 dark:border-gray-700'} 
                     bg-white dark:bg-gray-800 text-gray-900 dark:text-white 
                     placeholder:text-gray-500 dark:placeholder:text-gray-400
                     focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20
-                    transition-colors duration-200 ease-in-out"
+                    transition-colors duration-200 ease-in-out`}
                 />
+                {formErrors.name && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-sm text-red-500 dark:text-red-400"
+                  >
+                    {formErrors.name}
+                  </motion.p>
+                )}
               </div>
-              <div>
+              <div className="space-y-1">
                 <input
                   type="email"
                   name="email"
                   placeholder="Email"
                   required
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 
+                  className={`w-full px-4 py-3 rounded-lg border ${formErrors.email ? 'border-red-500 dark:border-red-400' : 'border-gray-200 dark:border-gray-700'} 
                     bg-white dark:bg-gray-800 text-gray-900 dark:text-white 
                     placeholder:text-gray-500 dark:placeholder:text-gray-400
                     focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20
-                    transition-colors duration-200 ease-in-out"
+                    transition-colors duration-200 ease-in-out`}
                 />
+                {formErrors.email && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-sm text-red-500 dark:text-red-400"
+                  >
+                    {formErrors.email}
+                  </motion.p>
+                )}
               </div>
-              <div>
+              <div className="space-y-1">
                 <textarea
                   name="message"
                   placeholder="Message"
                   required
                   rows={6}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 
+                  className={`w-full px-4 py-3 rounded-lg border ${formErrors.message ? 'border-red-500 dark:border-red-400' : 'border-gray-200 dark:border-gray-700'} 
                     bg-white dark:bg-gray-800 text-gray-900 dark:text-white 
                     placeholder:text-gray-500 dark:placeholder:text-gray-400
                     focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20
-                    transition-colors duration-200 ease-in-out resize-none"
+                    transition-colors duration-200 ease-in-out resize-none`}
                 />
+                {formErrors.message && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-sm text-red-500 dark:text-red-400"
+                  >
+                    {formErrors.message}
+                  </motion.p>
+                )}
               </div>
               <motion.button
                 type="submit"
@@ -135,6 +207,16 @@ const Contact = () => {
                 )}
               </motion.button>
             </form>
+            {showSuccess && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="mt-4 p-4 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-100 rounded-lg text-center"
+              >
+                Thank you for your message! I&apos;ll get back to you soon.
+              </motion.div>
+            )}
           </motion.div>
         </div>
       </div>

@@ -2,8 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Image, { StaticImageData } from 'next/image'
-import { FaGlobe, FaGithub } from 'react-icons/fa'
-
+import { FaGlobe, FaGithub, FaStar, FaDownload, FaUsers } from 'react-icons/fa'
 
 interface ProjectCardProps {
     title: string
@@ -12,45 +11,97 @@ interface ProjectCardProps {
     image: StaticImageData
     technologies: string[]
     type: string
+    featured: boolean
+    metrics?: {
+        stars?: number
+        downloads?: number
+        users?: number
+    }
     links: {
         live?: string
-      source?: string
+        source?: string
     }
-  }
+}
 
-const ProjectsCard = ({ title, description, date, image, technologies, type, links }: ProjectCardProps) => {
+const ProjectsCard = ({ 
+    title, 
+    description, 
+    date, 
+    image, 
+    technologies, 
+    type, 
+    featured,
+    metrics,
+    links 
+}: ProjectCardProps) => {
     return(
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
-            className="flex flex-col bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-shadow"
+            className="group flex flex-col bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
         >
-            <div className="relative aspect-[16/9] max-w-full overflow-hidden rounded-t-xl">
+            {/* Featured Badge */}
+            {featured && (
+                <div className="absolute top-4 right-4 z-10">
+                    <span className="bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                        Featured
+                    </span>
+                </div>
+            )}
+
+            <div className="relative aspect-[16/9] w-full overflow-hidden rounded-t-xl">
                 <Image
-                src={image}
-                alt={title}
-                fill
-                className="object-cover transition-transform duration-300 hover:scale-105"
+                    src={image}
+                    alt={title}
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    priority={featured}
                 />
             </div>
+
             <div className='flex flex-col p-6 flex-grow'>
-                <h3 className='text-2xl font-bold mb-2 text-gray-900'>{title}</h3>
+                <h3 className='text-xl font-bold text-gray-900 dark:text-white mb-2'>{title}</h3>
                 <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">{date}</p>
                 <p className="text-gray-700 dark:text-gray-300 mb-6">{description}</p>
+
+                {/* Metrics */}
+                {metrics && (
+                    <div className="flex gap-4 mb-6">
+                        {metrics.stars && (
+                            <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
+                                <FaStar className="text-yellow-400" />
+                                <span>{metrics.stars}</span>
+                            </div>
+                        )}
+                        {metrics.downloads && (
+                            <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
+                                <FaDownload />
+                                <span>{metrics.downloads}</span>
+                            </div>
+                        )}
+                        {metrics.users && (
+                            <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
+                                <FaUsers />
+                                <span>{metrics.users}</span>
+                            </div>
+                        )}
+                    </div>
+                )}
+
                 <div className='flex flex-wrap gap-2 mb-6'>
                     {technologies.map((item,index) => (
                         <span 
                             key={index}
-                            className='px-3 py-1 bg-gray-100 rounded-full text-sm text-gray-700'
+                            className='px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm text-gray-700 dark:text-gray-300'
                         >
                             {item}
                         </span>
                     ))}
                 </div>
 
-                <div className='flex gap-3'>
+                <div className='flex gap-3 mt-auto'>
                     {links.live && (
                         <motion.a
                             href={links.live}
@@ -58,11 +109,11 @@ const ProjectsCard = ({ title, description, date, image, technologies, type, lin
                             rel="noopener noreferrer"
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors"
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-md hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
                         >
                             <FaGlobe className="w-4 h-4"/>
                             <span>
-                                { type == "app" ? "Website" : "Package" }
+                                { type === "app" ? "Live Demo" : "Package" }
                             </span>
                         </motion.a>
                     )}
@@ -73,13 +124,10 @@ const ProjectsCard = ({ title, description, date, image, technologies, type, lin
                             rel="noopener noreferrer"
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            className="inline-flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-md hover:bg-gray-50 transition-colors"
+                            className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-300"
                         >
-                                
                             <FaGithub className="w-4 h-4"/>
-                            <span>
-                                Source
-                            </span>
+                            <span>Source</span>
                         </motion.a>
                     )}
                 </div>

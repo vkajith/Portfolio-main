@@ -110,3 +110,15 @@ section:nth-child(odd) {
 .dark section:nth-child(odd) {
   background-color: rgba(17, 24, 39, 0.3);
 }
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.transform-rotateX-180:hover {
+  transform: rotateX(10deg);
+}

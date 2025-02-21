@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import ProjectsCard from "./ui/projects-card"
 import HabitAct from "../img/HabitAct.png"
 import WhatsappUI from "../img/WhatsappUI.png"
-import SpotOnAi from "../img/SpotOnAi.png"
+import SpotOnAi from "../img/spotOnAi.png"
 import { motion, AnimatePresence } from "framer-motion"
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 import { useInView } from 'react-intersection-observer'

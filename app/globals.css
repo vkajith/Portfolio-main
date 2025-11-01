@@ -7,6 +7,8 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --accent-start: #6366f1; /* indigo-500 */
+  --accent-end: #a855f7; /* purple-500 */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -18,7 +20,7 @@
 
 @layer base {
   h1, h2, h3, h4, h5, h6 {
-    @apply text-gray-950 dark:text-gray-50 font-bold;
+    @apply text-gray-950 dark:text-gray-50 font-bold tracking-tight;
   }
 }
 
@@ -29,19 +31,11 @@ body {
 }
 
 .nav-link {
-  @apply relative text-gray-950 dark:text-gray-100 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200 font-medium;
+  @apply relative px-3 py-1 rounded-full text-gray-900 dark:text-gray-100 hover:text-gray-900 dark:hover:text-white transition-colors duration-200 font-medium hover:bg-gray-100 dark:hover:bg-gray-800/60;
 }
 
-.nav-link::after {
-  @apply content-[''] absolute left-0 -bottom-1 w-0 h-0.5 bg-gray-950 dark:bg-gray-100 transition-all duration-300;
-}
-
-.nav-link:hover::after {
-  @apply w-full;
-}
-
-.nav-link.active::after {
-  @apply w-full;
+.nav-link.active {
+  @apply bg-gray-100 dark:bg-gray-800/70 text-gray-900 dark:text-white shadow-sm;
 }
 
 @layer utilities {
@@ -55,6 +49,25 @@ body {
   
   .text-heading {
     @apply text-gray-950 dark:text-gray-50;
+  }
+
+  .gradient-text {
+    background: linear-gradient(90deg, var(--accent-start), var(--accent-end));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 shadow-lg hover:shadow-xl transition-all;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full border-2 border-gray-900 dark:border-white text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-all;
+  }
+
+  .glass {
+    @apply backdrop-blur-md bg-white/60 dark:bg-gray-900/50 border border-gray-200/60 dark:border-gray-700/50 shadow-sm;
   }
 }
 

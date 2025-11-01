@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import { motion } from 'framer-motion'
 import { FaGithub, FaLinkedin } from 'react-icons/fa'
 import { FaXTwitter } from "react-icons/fa6";
+import { FiUser, FiMail, FiMessageSquare } from 'react-icons/fi'
 import { handleSubmit } from '@/app/actions'
 
 import { IconType } from 'react-icons';
@@ -82,119 +83,116 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="py-20 bg-gray-50 dark:bg-gray-900">
-      <div className="container mx-auto px-6 max-w-5xl">
-        <div className="grid lg:grid-cols-2 gap-12">
-          {/* Left Column */}
+    <section id="contact" className="py-24 bg-gray-50 dark:bg-gray-900">
+      <div className="container mx-auto px-6 max-w-6xl">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          viewport={{ once: true }}
+          className="text-center mb-12"
+        >
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900 dark:text-white">
+            <span className="gradient-text">Drop a message</span>
+          </h2>
+          <p className="mt-3 text-gray-600 dark:text-gray-300">I’d love to hear from you — say hello, share ideas, or collaborate.</p>
+        </motion.div>
+
+        <div className="grid lg:grid-cols-2 gap-8">
+          {/* Left: Socials / Short bio */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
-            className="space-y-6"
+            className="glass rounded-xl p-8 border border-gray-200 dark:border-gray-700"
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white">
-              Let&apos;s Connect!
-            </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300">
-              If you&apos;d like to get in touch, feel free to connect with me via social media or send me a direct message here.
-            </p>
-            <div className="flex gap-6">
-              <SocialIcon 
-                href="https://linkedin.com/in/vysyakh-ajith" 
-                icon={FaLinkedin}
-              />
-              <SocialIcon 
-                href="https://x.com/whyshagajith" 
-                icon={FaXTwitter}
-              />
-              <SocialIcon 
-                href="https://github.com/vkajith" 
-                icon={FaGithub}
-              />
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Let’s connect</h3>
+            <p className="mt-2 text-gray-600 dark:text-gray-300">Prefer socials? I’m active here:</p>
+            <div className="mt-6 flex gap-6">
+              <SocialIcon href="https://linkedin.com/in/vysyakh-ajith" icon={FaLinkedin} />
+              <SocialIcon href="https://x.com/whyshagajith" icon={FaXTwitter} />
+              <SocialIcon href="https://github.com/vkajith" icon={FaGithub} />
             </div>
+            <div className="mt-8 h-px w-full bg-gradient-to-r from-accent-start/20 via-transparent to-accent-end/20" />
+            <p className="mt-8 text-sm text-gray-500 dark:text-gray-400">I typically respond within 24–48 hours.</p>
           </motion.div>
 
-          {/* Right Column - Contact Form */}
+          {/* Right: Message form */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
             viewport={{ once: true }}
+            className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm"
           >
-            <form ref={formRef} onSubmit={onSubmit} className="space-y-6">
-              <div className="space-y-1">
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Name"
-                  required
-                  className={`w-full px-4 py-3 rounded-lg border ${formErrors.name ? 'border-red-500 dark:border-red-400' : 'border-gray-200 dark:border-gray-700'} 
-                    bg-white dark:bg-gray-800 text-gray-900 dark:text-white 
-                    placeholder:text-gray-500 dark:placeholder:text-gray-400
-                    focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20
-                    transition-colors duration-200 ease-in-out`}
-                />
+            <form ref={formRef} onSubmit={onSubmit} className="p-8 space-y-6">
+              {/* Name */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Your name</label>
+                <div className={`flex items-center gap-3 px-4 py-3 rounded-lg border ${formErrors.name ? 'border-red-500 dark:border-red-400' : 'border-gray-200 dark:border-gray-700'} bg-white dark:bg-gray-800`}> 
+                  <FiUser className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Jane Doe"
+                    required
+                    className="w-full bg-transparent outline-none text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                  />
+                </div>
                 {formErrors.name && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-sm text-red-500 dark:text-red-400"
-                  >
+                  <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} className="mt-2 text-sm text-red-500 dark:text-red-400">
                     {formErrors.name}
                   </motion.p>
                 )}
               </div>
-              <div className="space-y-1">
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Email"
-                  required
-                  className={`w-full px-4 py-3 rounded-lg border ${formErrors.email ? 'border-red-500 dark:border-red-400' : 'border-gray-200 dark:border-gray-700'} 
-                    bg-white dark:bg-gray-800 text-gray-900 dark:text-white 
-                    placeholder:text-gray-500 dark:placeholder:text-gray-400
-                    focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20
-                    transition-colors duration-200 ease-in-out`}
-                />
+
+              {/* Email */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email address</label>
+                <div className={`flex items-center gap-3 px-4 py-3 rounded-lg border ${formErrors.email ? 'border-red-500 dark:border-red-400' : 'border-gray-200 dark:border-gray-700'} bg-white dark:bg-gray-800`}> 
+                  <FiMail className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="jane@doe.com"
+                    required
+                    className="w-full bg-transparent outline-none text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                  />
+                </div>
                 {formErrors.email && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-sm text-red-500 dark:text-red-400"
-                  >
+                  <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} className="mt-2 text-sm text-red-500 dark:text-red-400">
                     {formErrors.email}
                   </motion.p>
                 )}
               </div>
-              <div className="space-y-1">
-                <textarea
-                  name="message"
-                  placeholder="Message"
-                  required
-                  rows={6}
-                  className={`w-full px-4 py-3 rounded-lg border ${formErrors.message ? 'border-red-500 dark:border-red-400' : 'border-gray-200 dark:border-gray-700'} 
-                    bg-white dark:bg-gray-800 text-gray-900 dark:text-white 
-                    placeholder:text-gray-500 dark:placeholder:text-gray-400
-                    focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20
-                    transition-colors duration-200 ease-in-out resize-none`}
-                />
+
+              {/* Message */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Your message</label>
+                <div className={`flex items-start gap-3 px-4 py-3 rounded-lg border ${formErrors.message ? 'border-red-500 dark:border-red-400' : 'border-gray-200 dark:border-gray-700'} bg-white dark:bg-gray-800`}> 
+                  <FiMessageSquare className="mt-1 w-5 h-5 text-gray-500 dark:text-gray-400" />
+                  <textarea
+                    name="message"
+                    placeholder="Say hi, share feedback, or propose a collaboration…"
+                    required
+                    rows={6}
+                    className="w-full bg-transparent outline-none text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 resize-none"
+                  />
+                </div>
                 {formErrors.message && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-sm text-red-500 dark:text-red-400"
-                  >
+                  <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} className="mt-2 text-sm text-red-500 dark:text-red-400">
                     {formErrors.message}
                   </motion.p>
                 )}
               </div>
+
+              {/* Submit */}
               <motion.button
                 type="submit"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full px-8 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 
-                  rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
+                className="btn-primary w-full"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -203,20 +201,21 @@ const Contact = () => {
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
                 ) : (
-                  'SEND MESSAGE'
+                  'Send message'
                 )}
               </motion.button>
+
+              {showSuccess && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="mt-2 p-4 border border-green-300/50 dark:border-green-700/50 rounded-lg bg-green-50 dark:bg-green-900/40 text-green-700 dark:text-green-100"
+                >
+                  Thank you for your message! I’ll get back to you soon.
+                </motion.div>
+              )}
             </form>
-            {showSuccess && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="mt-4 p-4 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-100 rounded-lg text-center"
-              >
-                Thank you for your message! I&apos;ll get back to you soon.
-              </motion.div>
-            )}
           </motion.div>
         </div>
       </div>

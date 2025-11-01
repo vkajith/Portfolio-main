@@ -3,6 +3,7 @@
 import Image, { StaticImageData } from "next/image"
 import anarock from '../img/anarock.jpg';
 import nagarro from '../img/nagarro.png';
+import observe from '../img/observe.png';
 import { motion } from "framer-motion";
 
 
@@ -20,81 +21,59 @@ interface ExperienceItem
     }[]
 }
 
-const ExperienceCard = ({item, index}: { item: ExperienceItem; index: number }) => {
-    return (
-        <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-            viewport={{ once: true }}
-            className="group flex gap-4 md:gap-6 relative hover:bg-gray-50/30 dark:hover:bg-gray-800/30 
-                       rounded-xl transition-all duration-300 p-4 cursor-pointer -my-2"
-        >
-            <div className="absolute left-10 h-[calc(100%+16px)] w-px bg-gray-200 dark:bg-gray-700 -top-2">
-                <div className="absolute top-[24px] -bottom-[24px] left-0 w-full bg-gray-200 dark:bg-gray-700"></div>
-            </div>
-            <div className="relative flex-shrink-0 z-10 w-20">
-                <div className="sticky top-4 w-12 h-12 rounded-full bg-white dark:bg-gray-800 shadow-lg 
-                              flex items-center justify-center backdrop-blur-sm group-hover:shadow-blue-500/20">
-                    <Image 
-                        src={item.logo}
-                        alt={`${item.title} logo`}
-                        height={48}
-                        width={50}
-                        className="w-8 h-8 object-contain"
-                    />
-                </div>
-            </div>
-            <div className="pb-4 group-hover:pb-12 transition-all duration-700 flex-grow">
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">{item.date}</p>
-                <h3 className="text-xl font-bold mb-1 text-gray-900 dark:text-white group-hover:text-blue-500 
-                             transition-colors duration-300">{item.title}</h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-4">{item.location}</p>
-                <p className="text-gray-700 dark:text-gray-300">{item.summary}</p>
-                
-                <div className="space-y-6 h-0 overflow-hidden group-hover:h-auto mt-0 group-hover:mt-6 
-                              opacity-0 group-hover:opacity-100 transition-all duration-700 ease-in-out">
-                    {item.projects.map((project, idx) => (
-                        <div 
-                            key={idx} 
-                            className="space-y-2 opacity-0 group-hover:opacity-100 transition-all transform translate-y-4 group-hover:translate-y-0"
-                            style={{
-                                transitionDelay: `${idx * 100}ms`,
-                                transitionDuration: '700ms'
-                            }}
-                        >
-                            <div className="flex items-center space-x-2">
-                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                                <span className="text-blue-500 font-medium">{project.title}</span>
-                            </div>
-                            <ul className="ml-3 space-y-2 border-l-2 border-gray-200 dark:border-gray-700 pl-4">
-                                {project.points.map((point, pointIdx) => (
-                                    <li 
-                                        key={pointIdx} 
-                                        className="text-gray-700 dark:text-gray-300 text-sm opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0"
-                                        style={{
-                                            transitionDelay: `${(idx * 100) + (pointIdx * 50)}ms`,
-                                            transitionDuration: '700ms',
-                                            transitionProperty: 'all'
-                                        }}
-                                    >
-                                        {point}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </motion.div>
-    )
+const ExperienceCard = ({ item, index }: { item: ExperienceItem; index: number }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: index * 0.05 }}
+      viewport={{ once: true }}
+      className="flex items-start gap-4 p-5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition"
+    >
+      <div className="flex-shrink-0">
+        <div className="w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+          <Image
+            src={item.logo}
+            alt={`${item.title} logo`}
+            width={32}
+            height={32}
+            className="w-8 h-8 object-contain"
+          />
+        </div>
+      </div>
+      <div className="space-y-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{item.title}</h3>
+          <span className="text-sm text-gray-500 dark:text-gray-400">• {item.location}</span>
+        </div>
+        <p className="text-sm text-gray-600 dark:text-gray-400">{item.date}</p>
+        <p className="text-content">{item.summary}</p>
+      </div>
+    </motion.div>
+  )
 }
 
 const Experience = () => {
     const experiences = [
         {
+          logo: observe,
+          date: "July 2025 – Present",
+          title: "Software Development Engineer II",
+          location: "Observe AI",
+          summary: "Working in Agentic Platform development team, with end to end solutions for agent building and analytics modules",
+          projects: [
+                {
+                    title: "Observe AI Platform",
+                    points: [
+                        "Led the frontend development of the Observe AI platform, focusing on creating a user-friendly interface for data analysis and visualization. Implemented features such as real-time data dashboards and interactive visualizations to enhance user experience.",
+                        "Collaborated with backend developers to integrate APIs and ensure smooth data flow, resulting in a 20% increase in user engagement and a 15% decrease in support tickets."
+                    ]
+                }
+            ]
+        },
+        {
             logo: anarock,
-            date: "Feb 2022 – Present",
+            date: "Feb 2022 – July 2025",
             title: "Software Development Engineer II",
             location: "Anarock Technology",
             summary: "Leading frontend development initiatives and mentoring team members while building scalable solutions for real estate technology. Specialized in creating dynamic dashboards and implementing AI-driven features to enhance user engagement.",
@@ -140,22 +119,18 @@ const Experience = () => {
       ]
 
       return(
-        <section id="experience" className="py-20 bg-gray-50 dark:bg-gray-900 sm:px-4">
-            <div className="container mx-auto px-4 sm:px-6">
-                <div className="mb-12">
-                    <h2 className="text-3xl font-bold mb-2 text-gray-900 dark:text-white">Experience</h2>
-                    <p className="text-gray-600 dark:text-gray-400">My professional journey so far 🚀</p>
-                </div>
-                <div className="max-w-3xl">
-                    {experiences.map((item, index) => (
-                        <ExperienceCard 
-                            key={index}
-                            item={item}
-                            index={index}
-                        />
-                    ))}
-                </div>
+        <section id="experience" className="py-16 bg-gray-50 dark:bg-gray-900">
+          <div className="container mx-auto px-6">
+            <div className="mb-10">
+              <h2 className="text-3xl font-bold mb-2 text-gray-900 dark:text-white">Experience</h2>
+              <p className="text-gray-600 dark:text-gray-400">Roles and impact</p>
             </div>
+            <div className="max-w-3xl space-y-4">
+              {experiences.map((item, index) => (
+                <ExperienceCard key={index} item={item} index={index} />
+              ))}
+            </div>
+          </div>
         </section>
     )
 }

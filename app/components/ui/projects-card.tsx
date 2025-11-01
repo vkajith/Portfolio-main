@@ -40,12 +40,12 @@ const ProjectsCard = ({
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
-            className="group flex flex-col bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+            className="group flex flex-col bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl hover:shadow-indigo-500/10 transition-all duration-300 hover:scale-[1.01]"
         >
             {/* Featured Badge */}
             {featured && (
                 <div className="absolute top-4 right-4 z-10">
-                    <span className="bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                    <span className="bg-accent-gradient text-white text-xs font-medium px-2.5 py-0.5 rounded-full shadow-sm">
                         Featured
                     </span>
                 </div>
@@ -94,7 +94,7 @@ const ProjectsCard = ({
                     {technologies.map((item,index) => (
                         <span 
                             key={index}
-                            className='px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm text-gray-700 dark:text-gray-300'
+                            className='px-3 py-1 bg-gray-50 dark:bg-gray-700/60 border border-gray-200 dark:border-gray-700 rounded-full text-sm text-gray-700 dark:text-gray-300'
                         >
                             {item}
                         </span>
@@ -109,7 +109,7 @@ const ProjectsCard = ({
                             rel="noopener noreferrer"
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-md hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
+                            className="btn-primary"
                         >
                             <FaGlobe className="w-4 h-4"/>
                             <span>
@@ -124,7 +124,7 @@ const ProjectsCard = ({
                             rel="noopener noreferrer"
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-300"
+                            className="btn-outline"
                         >
                             <FaGithub className="w-4 h-4"/>
                             <span>Source</span>

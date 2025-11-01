@@ -38,11 +38,11 @@ const Navbar = () => {
       animate={{ y: 0 }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled 
-          ? 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-sm dark:shadow-gray-800/30' 
+          ? 'glass shadow-sm' 
           : 'bg-transparent'
       }`}
     >
-      <nav className="container mx-auto px-6 py-4">
+      <nav className="container mx-auto px-6 py-3">
         <div className="flex items-center justify-between">
           <motion.a
             href="#"
@@ -50,12 +50,12 @@ const Navbar = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <span className="bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">VK</span>
+            <span className="gradient-text">VK</span>
           </motion.a>
           
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
-            {['about', 'experience', 'projects', 'contact'].map((item) => (
+            {['about', 'experience', 'contact'].map((item) => (
               <motion.a
                 key={item}
                 href={`#${item}`}
@@ -94,7 +94,7 @@ const Navbar = () => {
           className={`md:hidden overflow-hidden`}
         >
           <div className="py-4 space-y-4">
-            {['about', 'experience', 'projects', 'contact'].map((item) => (
+            {['about', 'experience', 'contact'].map((item) => (
               <motion.a
                 key={item}
                 href={`#${item}`}

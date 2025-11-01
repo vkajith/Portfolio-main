@@ -70,10 +70,12 @@ export async function POST(request: Request): Promise<Response> {
       JSON.stringify({ success: true, message: "Email sent successfully" }),
       { status: 200 }
     );
-  } catch (error: any) {
-    console.error("Error sending email:", error?.message || error);
-    const msg =
-      error?.response?.toString?.() || error?.message || "Failed to send email";
-    return new Response(JSON.stringify({ error: msg }), { status: 500 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("Error sending email:", message);
+    return new Response(
+      JSON.stringify({ error: message || "Failed to send email" }),
+      { status: 500 }
+    );
   }
 }

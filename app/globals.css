@@ -135,3 +135,20 @@ section:nth-child(odd) {
 .transform-rotateX-180:hover {
   transform: rotateX(10deg);
 }
+
+/* Terminal */
+body {
+  /* room for the persistent Pompu dock at the bottom */
+  padding-bottom: 56px;
+}
+
+.terminal-scanlines {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(255, 255, 255, 0.02) 2px,
+    rgba(255, 255, 255, 0.02) 3px
+  );
+}
+

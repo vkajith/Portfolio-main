@@ -55,10 +55,14 @@ const Navbar = () => {
           
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
-            {['about', 'experience', 'contact'].map((item) => (
+            {['about', 'experience', 'projects', 'contact'].map((item) => (
               <motion.a
                 key={item}
                 href={`#${item}`}
+                onClick={(e) => {
+                  e.preventDefault()
+                  document.getElementById(item)?.scrollIntoView({ behavior: 'smooth' })
+                }}
                 className={`nav-link capitalize dark:text-gray-200 dark:hover:text-white ${
                   activeSection === item ? 'active' : ''
                 }`}
@@ -94,14 +98,18 @@ const Navbar = () => {
           className={`md:hidden overflow-hidden`}
         >
           <div className="py-4 space-y-4">
-            {['about', 'experience', 'contact'].map((item) => (
+            {['about', 'experience', 'projects', 'contact'].map((item) => (
               <motion.a
                 key={item}
                 href={`#${item}`}
                 className={`block nav-link capitalize dark:text-gray-200 dark:hover:text-white ${
                   activeSection === item ? 'active' : ''
                 }`}
-                onClick={() => setIsMenuOpen(false)}
+                onClick={(e) => {
+                  e.preventDefault()
+                  setIsMenuOpen(false)
+                  document.getElementById(item)?.scrollIntoView({ behavior: 'smooth' })
+                }}
                 whileHover={{ x: 10 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >

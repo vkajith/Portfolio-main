@@ -47,7 +47,7 @@ export default function Projects() {
             href={project.link}
             target="_blank"
             rel="noopener noreferrer"
-            className="card-hover flex flex-col sm:flex-row gap-4 group rounded-xl p-4 -mx-4 border border-transparent hover:border-[rgba(107,127,62,0.15)] hover:bg-[var(--bg-card)]"
+            className="card-hover flex flex-col sm:flex-row gap-4 group rounded-xl p-4 -mx-4 border border-transparent hover:border-[var(--accent-soft-15)] hover:bg-[var(--bg-card)]"
           >
             {/* Thumbnail */}
             <div className="w-full sm:w-36 h-24 sm:h-24 rounded-lg overflow-hidden bg-[var(--bg-card)] shrink-0 relative border border-[var(--border-color)]">

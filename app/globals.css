@@ -3,6 +3,8 @@
 @tailwind utilities;
 
 @layer base {
+
+  /* ===== Light theme (default) — warm cream + moss ===== */
   :root {
     --bg-primary: #F5F0E8;
     --bg-card: #EAE5DB;
@@ -12,114 +14,252 @@
     --text-muted: #999999;
     --accent: #6B7F3E;
     --accent-light: #8BA34E;
+    --accent-secondary: #6B7F3E;
+    /* same as accent in light — no dual-color in light */
     --accent-glow: rgba(107, 127, 62, 0.15);
     --border-color: #DDD8CE;
-    --terminal-bg: #0f0f0f;
-    --terminal-border: #2a2a2a;
+
+    /* tints used by .pompu-scroll, selection, etc. */
+    --accent-soft-05: rgba(107, 127, 62, 0.05);
+    --accent-soft-10: rgba(107, 127, 62, 0.10);
+    --accent-soft-15: rgba(107, 127, 62, 0.15);
+    --accent-soft-25: rgba(107, 127, 62, 0.25);
+    --accent-soft-35: rgba(107, 127, 62, 0.35);
+
+    /* glow intensity for .neon-glow — 0 in light theme (no glow) */
+    --glow-strength: 0;
+
+    color-scheme: light;
+  }
+
+  /* ===== Dark theme — neon noir: deep ink + magenta + cyan ===== */
+  [data-theme="dark"] {
+    --bg-primary: #0a0612;
+    --bg-card: #15102a;
+    --bg-card-hover: #1d1638;
+    --text-primary: #f0e8ff;
+    --text-secondary: #b9aed3;
+    --text-muted: #7d6f9d;
+    --accent: #ff3dc8;
+    /* hot magenta */
+    --accent-light: #ff6cd9;
+    --accent-secondary: #00e6ff;
+    /* electric cyan */
+    --accent-glow: rgba(255, 61, 200, 0.30);
+    --border-color: #2d1f4a;
+
+    --accent-soft-05: rgba(255, 61, 200, 0.06);
+    --accent-soft-10: rgba(255, 61, 200, 0.12);
+    --accent-soft-15: rgba(255, 61, 200, 0.18);
+    --accent-soft-25: rgba(255, 61, 200, 0.28);
+    --accent-soft-35: rgba(255, 61, 200, 0.40);
+
+    --glow-strength: 1;
+
+    color-scheme: dark;
   }
 
   * {
     @apply border-[var(--border-color)];
   }
 
+  html,
   body {
     background-color: var(--bg-primary);
     color: var(--text-primary);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Cross-fade fallback when View Transition API isn't available. */
+    transition: background-color 0.45s ease, color 0.45s ease;
   }
 
   ::selection {
-    background-color: rgba(107, 127, 62, 0.25);
+    background-color: var(--accent-soft-25);
     color: var(--text-primary);
   }
 }
 
-/* ---- Terminal scrollbar ---- */
-.terminal-scroll::-webkit-scrollbar { width: 4px; }
-.terminal-scroll::-webkit-scrollbar-track { background: transparent; }
-.terminal-scroll::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 2px;
-}
-.terminal-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.15);
+/* ===========================================================
+   Pompu terminal
+   =========================================================== */
+.pompu-scroll::-webkit-scrollbar {
+  width: 4px;
 }
 
-/* ---- Animations ---- */
-@keyframes blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
+.pompu-scroll::-webkit-scrollbar-track {
+  background: transparent;
 }
+
+.pompu-scroll::-webkit-scrollbar-thumb {
+  background: var(--accent-soft-15);
+  border-radius: 2px;
+}
+
+.pompu-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-soft-35);
+}
+
+.pompu-card {
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease, background-color 0.45s ease;
+}
+
+.pompu-card:hover {
+  border-color: var(--accent-soft-35);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .pompu-card:hover {
+  border-color: rgba(0, 230, 255, 0.45);
+  box-shadow: 0 0 0 1px rgba(0, 230, 255, 0.25), 0 8px 28px rgba(255, 61, 200, 0.10);
+}
+
+/* ===========================================================
+   Animations — kept across themes unless noted
+   =========================================================== */
+@keyframes blink {
+
+  0%,
+  50% {
+    opacity: 1;
+  }
+
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
 .cursor-blink {
   animation: blink 1s step-end infinite;
 }
 
 @keyframes typingDot {
-  0%, 20% { opacity: 0.15; }
-  50% { opacity: 1; }
-  80%, 100% { opacity: 0.15; }
+
+  0%,
+  20% {
+    opacity: 0.15;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  80%,
+  100% {
+    opacity: 0.15;
+  }
 }
-.typing-dot:nth-child(1) { animation: typingDot 1.4s infinite 0s; }
-.typing-dot:nth-child(2) { animation: typingDot 1.4s infinite 0.2s; }
-.typing-dot:nth-child(3) { animation: typingDot 1.4s infinite 0.4s; }
+
+.typing-dot:nth-child(1) {
+  animation: typingDot 1.4s infinite 0s;
+}
+
+.typing-dot:nth-child(2) {
+  animation: typingDot 1.4s infinite 0.2s;
+}
+
+.typing-dot:nth-child(3) {
+  animation: typingDot 1.4s infinite 0.4s;
+}
 
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
+
 .animate-fade-in-up {
   animation: fadeInUp 0.6s ease-out forwards;
 }
 
 @keyframes slideInLeft {
-  from { opacity: 0; transform: translateX(-20px); }
-  to { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
+
 .animate-slide-in-left {
   animation: slideInLeft 0.5s ease-out forwards;
 }
 
 @keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 0 0 var(--accent-glow); }
-  50% { box-shadow: 0 0 0 8px transparent; }
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 var(--accent-glow);
+  }
+
+  50% {
+    box-shadow: 0 0 0 8px transparent;
+  }
 }
+
 .pulse-glow {
   animation: pulseGlow 2s ease-in-out infinite;
 }
 
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* ---- Stagger children animation ---- */
-.stagger-children > * {
+.stagger-children>* {
   opacity: 0;
   animation: fadeInUp 0.5s ease-out forwards;
 }
-.stagger-children > *:nth-child(1) { animation-delay: 0.1s; }
-.stagger-children > *:nth-child(2) { animation-delay: 0.2s; }
-.stagger-children > *:nth-child(3) { animation-delay: 0.3s; }
-.stagger-children > *:nth-child(4) { animation-delay: 0.4s; }
-.stagger-children > *:nth-child(5) { animation-delay: 0.5s; }
-.stagger-children > *:nth-child(6) { animation-delay: 0.6s; }
 
-/* ---- Card hover lift ---- */
-.card-hover {
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+.stagger-children>*:nth-child(1) {
+  animation-delay: 0.1s;
 }
+
+.stagger-children>*:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.stagger-children>*:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.stagger-children>*:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+.stagger-children>*:nth-child(5) {
+  animation-delay: 0.5s;
+}
+
+.stagger-children>*:nth-child(6) {
+  animation-delay: 0.6s;
+}
+
+.card-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, background-color 0.45s ease;
+}
+
 .card-hover:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
 }
 
-/* ---- Tag hover with fill ---- */
+[data-theme="dark"] .card-hover:hover {
+  box-shadow:
+    0 0 0 1px rgba(0, 230, 255, 0.30),
+    0 12px 36px rgba(255, 61, 200, 0.12);
+  border-color: rgba(0, 230, 255, 0.35) !important;
+}
+
 .tag-interactive {
   transition: all 0.2s ease;
   cursor: default;
 }
+
 .tag-interactive:hover {
   background-color: var(--accent);
   color: white;
@@ -127,20 +267,37 @@
   transform: translateY(-1px);
 }
 
-/* ---- Status indicator ---- */
-@keyframes statusPing {
-  0% { transform: scale(1); opacity: 0.8; }
-  75%, 100% { transform: scale(2.2); opacity: 0; }
+[data-theme="dark"] .tag-interactive:hover {
+  background-color: var(--accent);
+  color: #0a0612;
+  box-shadow: 0 0 12px var(--accent-glow);
 }
+
+@keyframes statusPing {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+
+  75%,
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
 .status-ping {
   animation: statusPing 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
-/* ---- Subtle noise texture overlay ---- */
+/* ---- Subtle noise texture (kept in both themes, slightly stronger in dark) ---- */
 .noise-overlay::before {
   content: '';
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   pointer-events: none;
   z-index: 9999;
   opacity: 0.025;
@@ -149,11 +306,36 @@
   background-size: 256px 256px;
 }
 
-/* ---- Link underline animation ---- */
+[data-theme="dark"] .noise-overlay::before {
+  opacity: 0.05;
+}
+
+/* ---- Scanline overlay — dark mode only, very faint CRT vibe ---- */
+.noise-overlay::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0;
+  background-image: repeating-linear-gradient(to bottom,
+      rgba(255, 255, 255, 0.03) 0px,
+      rgba(255, 255, 255, 0.03) 1px,
+      transparent 1px,
+      transparent 3px);
+  transition: opacity 0.45s ease;
+}
+
+[data-theme="dark"] .noise-overlay::after {
+  opacity: 0.6;
+}
+
+/* ---- Link underline ---- */
 .link-hover {
   position: relative;
   text-decoration: none;
 }
+
 .link-hover::after {
   content: '';
   position: absolute;
@@ -164,30 +346,277 @@
   background-color: var(--accent);
   transition: width 0.3s ease;
 }
+
 .link-hover:hover::after {
   width: 100%;
 }
 
-/* ---- Section divider with accent dot ---- */
+[data-theme="dark"] .link-hover:hover::after {
+  box-shadow: 0 0 8px var(--accent);
+}
+
+/* ---- Section divider — carrot survives both themes ---- */
 .section-divider {
   position: relative;
   height: 1px;
-  background: linear-gradient(
-    to right,
-    transparent,
-    var(--border-color) 20%,
-    var(--border-color) 80%,
-    transparent
-  );
+  background: linear-gradient(to right,
+      transparent,
+      var(--border-color) 20%,
+      var(--border-color) 80%,
+      transparent);
 }
+
 .section-divider::after {
-  content: '';
+  content: '🥕';
   position: absolute;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%);
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: var(--accent);
+  transform: translate(-50%, -50%) rotate(8deg);
+  font-size: 14px;
+  line-height: 1;
+  background: var(--bg-primary);
+  padding: 0 6px;
+  filter: saturate(0.85);
+  opacity: 0.85;
+  transition: filter 0.45s ease, background-color 0.45s ease;
+}
+
+[data-theme="dark"] .section-divider::after {
+  filter: saturate(1.2);
+}
+
+/* ---- Pompu: ear-twitch ---- */
+@keyframes earTwitch {
+
+  0%,
+  92%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  94% {
+    transform: rotate(-12deg);
+  }
+
+  96% {
+    transform: rotate(8deg);
+  }
+
+  98% {
+    transform: rotate(-4deg);
+  }
+}
+
+.ear-twitch {
+  transform-origin: 50% 70%;
+  animation: earTwitch 2.6s ease-in-out infinite;
+}
+
+/* ---- Konami: carrot rain ---- */
+@keyframes carrotFall {
+  0% {
+    transform: translateY(-10vh) rotate(0deg);
+    opacity: 0;
+  }
+
+  8% {
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(110vh) rotate(540deg);
+    opacity: 0;
+  }
+}
+
+.carrot-fall {
+  animation: carrotFall 3.4s linear forwards;
+  will-change: transform, opacity;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+}
+
+[data-theme="dark"] .carrot-fall {
+  filter: drop-shadow(0 0 8px rgba(255, 142, 60, 0.6));
+}
+
+/* ---- Command palette ---- */
+@keyframes paletteFade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes palettePop {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.cmd-palette-fade {
+  animation: paletteFade 0.18s ease-out;
+}
+
+.cmd-palette-pop {
+  animation: palettePop 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ===========================================================
+   Neon-noir: glow utilities (no-op in light mode via --glow-strength)
+   =========================================================== */
+.neon-glow {
+  text-shadow:
+    0 0 calc(8px * var(--glow-strength)) var(--accent-glow),
+    0 0 calc(18px * var(--glow-strength)) var(--accent-glow);
+}
+
+.neon-glow-cyan {
+  text-shadow:
+    0 0 calc(8px * var(--glow-strength)) rgba(0, 230, 255, 0.45),
+    0 0 calc(18px * var(--glow-strength)) rgba(0, 230, 255, 0.25);
+}
+
+/* Pompu's block cursor glows in dark mode */
+[data-theme="dark"] .cursor-blink {
+  text-shadow: 0 0 8px var(--accent), 0 0 16px var(--accent-glow);
+}
+
+/* ---- Glitch wobble on hover (the H1 name) — dark mode only ---- */
+@keyframes glitchShift {
+
+  0%,
+  100% {
+    transform: translate(0, 0);
+    text-shadow: none;
+  }
+
+  20% {
+    transform: translate(-1px, 1px);
+    text-shadow: 2px 0 var(--accent), -2px 0 var(--accent-secondary);
+  }
+
+  40% {
+    transform: translate(2px, -1px);
+    text-shadow: -2px 0 var(--accent), 2px 0 var(--accent-secondary);
+  }
+
+  60% {
+    transform: translate(-1px, 0);
+    text-shadow: 1px 0 var(--accent), -1px 0 var(--accent-secondary);
+  }
+
+  80% {
+    transform: translate(1px, 1px);
+    text-shadow: -1px 0 var(--accent), 1px 0 var(--accent-secondary);
+  }
+}
+
+.glitch-on-hover {
+  transition: text-shadow 0.2s ease;
+}
+
+[data-theme="dark"] .glitch-on-hover:hover {
+  animation: glitchShift 0.4s steps(2, end) 1;
+}
+
+/* ===========================================================
+   Theme toggle: View Transitions API circular wipe
+   =========================================================== */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 9999;
+  animation: themeWipeIn 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes themeWipeIn {
+  from {
+    clip-path: circle(0% at var(--theme-x, 100%) var(--theme-y, 0%));
+  }
+
+  to {
+    clip-path: circle(150% at var(--theme-x, 100%) var(--theme-y, 0%));
+  }
+}
+
+/* ---- Theme button: rotate + icon morph ---- */
+.theme-toggle-btn {
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease, color 0.3s ease;
+}
+
+.theme-toggle-btn:active {
+  transform: rotate(180deg) scale(0.92);
+}
+
+.theme-toggle-btn:hover {
+  transform: rotate(20deg);
+}
+
+/* ===========================================================
+   Reduced motion
+   =========================================================== */
+@media (prefers-reduced-motion: reduce) {
+
+  .ear-twitch,
+  .carrot-fall,
+  .cmd-palette-fade,
+  .cmd-palette-pop,
+  .status-ping,
+  .animate-fade-in-up,
+  .animate-slide-in-left,
+  .pulse-glow,
+  .glitch-on-hover:hover {
+    animation: none !important;
+  }
+
+  ::view-transition-new(root) {
+    animation: none;
+  }
+
+  html,
+  body,
+  .pompu-card,
+  .card-hover,
+  .section-divider::after {
+    transition: none !important;
+  }
+}
+
+/* ===========================================================
+   Focus ring
+   =========================================================== */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+input:focus-visible,
+button:focus-visible {
+  outline-offset: 3px;
+}
+
+.pompu-input:focus-visible {
+  outline: none;
 }

@@ -49,7 +49,7 @@ export default function Experience() {
               {exp.period}
             </div>
 
-            <div className="card-hover bg-[var(--bg-card)] rounded-xl p-5 border border-transparent hover:border-[rgba(107,127,62,0.15)]">
+            <div className="card-hover bg-[var(--bg-card)] rounded-xl p-5 border border-transparent hover:border-[var(--accent-soft-15)]">
               <div className="flex items-start gap-3 mb-3">
                 <div className="w-9 h-9 rounded-lg bg-white flex items-center justify-center p-1.5 shrink-0 overflow-hidden shadow-sm group-hover:shadow-md transition-shadow">
                   <Image src={exp.logo} alt={exp.company} className="w-full h-full object-contain" />

@@ -1,117 +1,43 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { ThemeToggle } from './ThemeToggle'
+import { motion } from "framer-motion"
+import { Home, Briefcase, Mail, FolderOpen, Heart } from "lucide-react"
 
 const Navbar = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [activeSection, setActiveSection] = useState('')
-  const [isScrolled, setIsScrolled] = useState(false)
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20)
-      
-      // Update active section based on scroll position
-      const sections = document.querySelectorAll('section[id]')
-      const scrollPosition = window.scrollY + 100
-
-      sections.forEach(section => {
-        const sectionTop = (section as HTMLElement).offsetTop
-        const sectionHeight = (section as HTMLElement).offsetHeight
-        const sectionId = section.getAttribute('id') || ''
-
-        if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
-          setActiveSection(sectionId)
-        }
-      })
-    }
-
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+  const navItems = [
+    { name: "Home", href: "#about", icon: Home },
+    { name: "Projects", href: "#projects", icon: FolderOpen },
+    { name: "Exp", href: "#experience", icon: Briefcase },
+    { name: "Skills", href: "#skills", icon: Heart },
+    { name: "Contact", href: "#contact", icon: Mail },
+  ]
 
   return (
-    <motion.header
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled 
-          ? 'glass shadow-sm' 
-          : 'bg-transparent'
-      }`}
-    >
-      <nav className="container mx-auto px-6 py-3">
-        <div className="flex items-center justify-between">
-          <motion.a
-            href="#"
-            className="text-xl font-bold text-gray-900 dark:text-white"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+    <header className="fixed top-6 left-1/2 -translate-x-1/2 z-50">
+      <motion.nav
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.8, type: "spring", stiffness: 100 }}
+        className="bg-black/80 backdrop-blur-md border border-white/10 rounded-full px-2 py-2 flex items-center gap-1 shadow-2xl"
+      >
+        {navItems.map((item) => (
+          <a
+            key={item.name}
+            href={item.href}
+            className="relative px-4 py-2 rounded-full text-sm font-medium text-gray-400 hover:text-white transition-colors group"
           >
-            <span className="gradient-text">VK</span>
-          </motion.a>
-          
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-8">
-            {['about', 'experience', 'contact'].map((item) => (
-              <motion.a
-                key={item}
-                href={`#${item}`}
-                className={`nav-link capitalize dark:text-gray-200 dark:hover:text-white ${
-                  activeSection === item ? 'active' : ''
-                }`}
-                whileHover={{ y: -2 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                {item}
-              </motion.a>
-            ))}
-          </div>
+            <span className="relative z-10 flex items-center gap-2">
+              {/* Icon only on mobile, text on desktop */}
+              <item.icon className="w-4 h-4 md:hidden" />
+              <span className="hidden md:inline">{item.name}</span>
+            </span>
 
-          <div className="flex items-center space-x-4">
-            <ThemeToggle />
-            <motion.button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden text-gray-900 dark:text-white"
-              whileTap={{ scale: 0.95 }}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </motion.button>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        <motion.div
-          initial={false}
-          animate={{
-            height: isMenuOpen ? 'auto' : 0,
-            opacity: isMenuOpen ? 1 : 0
-          }}
-          className={`md:hidden overflow-hidden`}
-        >
-          <div className="py-4 space-y-4">
-            {['about', 'experience', 'contact'].map((item) => (
-              <motion.a
-                key={item}
-                href={`#${item}`}
-                className={`block nav-link capitalize dark:text-gray-200 dark:hover:text-white ${
-                  activeSection === item ? 'active' : ''
-                }`}
-                onClick={() => setIsMenuOpen(false)}
-                whileHover={{ x: 10 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                {item}
-              </motion.a>
-            ))}
-          </div>
-        </motion.div>
-      </nav>
-    </motion.header>
+            {/* Magnetic Hover Background */}
+            <span className="absolute inset-0 bg-white/10 rounded-full scale-0 group-hover:scale-100 transition-transform duration-300" />
+          </a>
+        ))}
+      </motion.nav>
+    </header>
   )
 }
 

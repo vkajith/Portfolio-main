@@ -6,32 +6,27 @@ export default {
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-        primary: {
-          DEFAULT: '#000000',
-          dark: '#ffffff'
+        bg: {
+          primary: 'var(--bg-primary)',
+          card: 'var(--bg-card)',
         },
-        secondary: {
-          DEFAULT: '#666666',
-          dark: '#a3a3a3'
+        text: {
+          primary: 'var(--text-primary)',
+          secondary: 'var(--text-secondary)',
+          muted: 'var(--text-muted)',
         },
         accent: {
-          start: '#6366f1', // indigo-500
-          end: '#a855f7',   // purple-500
-        }
+          DEFAULT: 'var(--accent)',
+          light: 'var(--accent-light)',
+        },
+        border: 'var(--border-color)',
       },
       fontFamily: {
-        inter: ['Inter', 'sans-serif'],
-      },
-      backgroundImage: {
-        'grid-gray-900': 'linear-gradient(to right, rgb(17 24 39 / var(--tw-bg-opacity)) 1px, transparent 1px), linear-gradient(to bottom, rgb(17 24 39 / var(--tw-bg-opacity)) 1px, transparent 1px)',
-        'grid-white': 'linear-gradient(to right, rgb(255 255 255 / var(--tw-bg-opacity)) 1px, transparent 1px), linear-gradient(to bottom, rgb(255 255 255 / var(--tw-bg-opacity)) 1px, transparent 1px)',
-        'accent-gradient': 'linear-gradient(90deg, var(--accent-start), var(--accent-end))',
+        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-jetbrains)', 'monospace'],
       },
     },
   },

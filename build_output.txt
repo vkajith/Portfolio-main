@@ -1,0 +1,64 @@
+
+> portfolio@0.1.0 build
+> next build
+
+   ▲ Next.js 15.1.0
+   - Environments: .env
+
+   Creating an optimized production build ...
+<w> [webpack.cache.PackFileCacheStrategy] Skipped not serializable cache item 'Compilation/modules|/Users/vysyakhajith/projects/Portfolio-main/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!/Users/vysyakhajith/projects/Portfolio-main/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!/Users/vysyakhajith/projects/Portfolio-main/app/globals.css': No serializer registered for PostCSSSyntaxError
+<w> while serializing webpack/lib/cache/PackFileCacheStrategy.PackContentItems -> webpack/lib/NormalModule -> webpack/lib/ModuleBuildError -> PostCSSSyntaxError
+Failed to compile.
+
+./app/globals.css:1:1
+Syntax error: /Users/vysyakhajith/projects/Portfolio-main/app/globals.css The `border-border` class does not exist. If `border-border` is a custom class, make sure it is defined within a `@layer` directive.
+
+> 1 | @tailwind base;
+    | ^
+  2 | @tailwind components;
+  3 | @tailwind utilities;
+
+./app/globals.css
+Syntax error: /Users/vysyakhajith/projects/Portfolio-main/app/globals.css The `border-border` class does not exist. If `border-border` is a custom class, make sure it is defined within a `@layer` directive. (1:1)
+
+> 1 | @tailwind base;
+    | ^
+  2 | @tailwind components;
+  3 | @tailwind utilities;
+
+    at tryRunOrWebpackError (/Users/vysyakhajith/projects/Portfolio-main/node_modules/next/dist/compiled/webpack/bundle5.js:28:314962)
+    at __webpack_require_module__ (/Users/vysyakhajith/projects/Portfolio-main/node_modules/next/dist/compiled/webpack/bundle5.js:28:131434)
+    at __nested_webpack_require_161179__ (/Users/vysyakhajith/projects/Portfolio-main/node_modules/next/dist/compiled/webpack/bundle5.js:28:130872)
+    at /Users/vysyakhajith/projects/Portfolio-main/node_modules/next/dist/compiled/webpack/bundle5.js:28:131723
+    at symbolIterator (/Users/vysyakhajith/projects/Portfolio-main/node_modules/next/dist/compiled/neo-async/async.js:1:14444)
+    at done (/Users/vysyakhajith/projects/Portfolio-main/node_modules/next/dist/compiled/neo-async/async.js:1:14824)
+    at Hook.eval [as callAsync] (eval at create (/Users/vysyakhajith/projects/Portfolio-main/node_modules/next/dist/compiled/webpack/bundle5.js:13:9218), <anonymous>:15:1)
+    at Hook.CALL_ASYNC_DELEGATE [as _callAsync] (/Users/vysyakhajith/projects/Portfolio-main/node_modules/next/dist/compiled/webpack/bundle5.js:13:6372)
+    at /Users/vysyakhajith/projects/Portfolio-main/node_modules/next/dist/compiled/webpack/bundle5.js:28:130593
+    at symbolIterator (/Users/vysyakhajith/projects/Portfolio-main/node_modules/next/dist/compiled/neo-async/async.js:1:14402)
+-- inner error --
+Syntax error: /Users/vysyakhajith/projects/Portfolio-main/app/globals.css The `border-border` class does not exist. If `border-border` is a custom class, make sure it is defined within a `@layer` directive. (1:1)
+
+> 1 | @tailwind base;
+    | ^
+  2 | @tailwind components;
+  3 | @tailwind utilities;
+
+    at Object.<anonymous> (/Users/vysyakhajith/projects/Portfolio-main/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!/Users/vysyakhajith/projects/Portfolio-main/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!/Users/vysyakhajith/projects/Portfolio-main/app/globals.css:1:7)
+    at /Users/vysyakhajith/projects/Portfolio-main/node_modules/next/dist/compiled/webpack/bundle5.js:28:955548
+    at Hook.eval [as call] (eval at create (/Users/vysyakhajith/projects/Portfolio-main/node_modules/next/dist/compiled/webpack/bundle5.js:13:8996), <anonymous>:7:1)
+    at Hook.CALL_DELEGATE [as _call] (/Users/vysyakhajith/projects/Portfolio-main/node_modules/next/dist/compiled/webpack/bundle5.js:13:6266)
+    at /Users/vysyakhajith/projects/Portfolio-main/node_modules/next/dist/compiled/webpack/bundle5.js:28:131467
+    at tryRunOrWebpackError (/Users/vysyakhajith/projects/Portfolio-main/node_modules/next/dist/compiled/webpack/bundle5.js:28:314916)
+    at __webpack_require_module__ (/Users/vysyakhajith/projects/Portfolio-main/node_modules/next/dist/compiled/webpack/bundle5.js:28:131434)
+    at __nested_webpack_require_161179__ (/Users/vysyakhajith/projects/Portfolio-main/node_modules/next/dist/compiled/webpack/bundle5.js:28:130872)
+    at /Users/vysyakhajith/projects/Portfolio-main/node_modules/next/dist/compiled/webpack/bundle5.js:28:131723
+    at symbolIterator (/Users/vysyakhajith/projects/Portfolio-main/node_modules/next/dist/compiled/neo-async/async.js:1:14444)
+
+Generated code for /Users/vysyakhajith/projects/Portfolio-main/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!/Users/vysyakhajith/projects/Portfolio-main/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!/Users/vysyakhajith/projects/Portfolio-main/app/globals.css
+
+Import trace for requested module:
+./app/globals.css
+
+
+> Build failed because of webpack errors

@@ -2,88 +2,113 @@
 
 import { motion } from 'framer-motion'
 import { IconType } from 'react-icons'
-import { 
-  FaReact, FaNodeJs 
+import {
+  FaReact, FaNodeJs, FaPython, FaDocker
 } from 'react-icons/fa'
-import { 
-  SiNextdotjs, 
-  SiFastapi, SiMongodb, SiExpress , SiTypescript, SiNestjs,
-  SiGraphql
+import {
+  SiNextdotjs, SiTailwindcss,
+  SiFastapi, SiMongodb, SiExpress, SiTypescript, SiNestjs,
+  SiGraphql, SiRedux, SiPrisma
 } from 'react-icons/si'
-
 import { BiLogoPostgresql } from "react-icons/bi";
-
 import { IoLogoFirebase } from "react-icons/io5";
 
-interface Skill {
-  name: string
-  icon: IconType
-  category: string
+interface SkillCategory {
+  title: string
+  skills: {
+    name: string
+    icon: IconType
+    color: string
+  }[]
 }
 
-const skills: Skill[] = [
-  { name: 'React', icon: FaReact, category: 'Frameworks' },
-  { name: 'Next.js', icon: SiNextdotjs, category: 'Frameworks' },
-  { name: 'Express.js', icon: SiExpress, category: 'Frameworks' },
-  { name: 'Node.js', icon: FaNodeJs, category: 'Frameworks' },
-  { name: 'FastAPI', icon: SiFastapi, category: 'Frameworks' },
-  { name: 'MongoDB', icon: SiMongodb, category: 'Databases' },
-  { name: 'PostgreSQL', icon: BiLogoPostgresql, category: 'Databases' },
-  { name: 'Firebase', icon: IoLogoFirebase, category: 'Databases' },
-  { name: 'NestJs', icon: SiNestjs, category: 'Frameworks' },
-  { name: 'Typescript', icon: SiTypescript, category: 'Language' }, 
-  { name: 'GraphQL', icon: SiGraphql, category: 'Language' }, 
+const skillCategories: SkillCategory[] = [
+  {
+    title: "Frontend",
+    skills: [
+      { name: 'React', icon: FaReact, color: '#61DAFB' },
+      { name: 'Next.js', icon: SiNextdotjs, color: '#000000' },
+      { name: 'TypeScript', icon: SiTypescript, color: '#3178C6' },
+      { name: 'Tailwind', icon: SiTailwindcss, color: '#06B6D4' },
+      { name: 'Redux', icon: SiRedux, color: '#764ABC' },
+    ]
+  },
+  {
+    title: "Backend",
+    skills: [
+      { name: 'Node.js', icon: FaNodeJs, color: '#339933' },
+      { name: 'NestJS', icon: SiNestjs, color: '#E0234E' },
+      { name: 'Express', icon: SiExpress, color: '#000000' },
+      { name: 'FastAPI', icon: SiFastapi, color: '#009688' },
+      { name: 'GraphQL', icon: SiGraphql, color: '#E10098' },
+      { name: 'Python', icon: FaPython, color: '#3776AB' },
+    ]
+  },
+  {
+    title: "Database & Cloud",
+    skills: [
+      { name: 'PostgreSQL', icon: BiLogoPostgresql, color: '#4169E1' },
+      { name: 'MongoDB', icon: SiMongodb, color: '#47A248' },
+      { name: 'Firebase', icon: IoLogoFirebase, color: '#FFCA28' },
+      { name: 'Prisma', icon: SiPrisma, color: '#2D3748' },
+      { name: 'Docker', icon: FaDocker, color: '#2496ED' },
+    ]
+  }
 ]
-
-const SkillIcon = ({ skill }: { skill: Skill }) => {
-  const Icon = skill.icon
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.5 }}
-      whileInView={{ opacity: 1, scale: 1 }}
-      whileHover={{ scale: 1.1 }}
-      transition={{ duration: 0.3 }}
-      className="flex flex-col items-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-shadow"
-    >
-      <div className="w-16 h-16 flex items-center justify-center text-4xl text-gray-700 dark:text-gray-300 mb-2">
-        <Icon />
-      </div>
-      <span className="text-sm font-medium text-gray-600 dark:text-gray-400 text-center">{skill.name}</span>
-    </motion.div>
-  )
-}
 
 const Skills = () => {
   return (
-    <section id="skills" className="py-20 bg-gray-50 dark:bg-gray-900">
-      <div className="container mx-auto px-6">
+    <section id="skills" className="py-32 relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px] pointer-events-none" />
+
+      <div className="container mx-auto px-4 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
           viewport={{ once: true }}
-          className="text-center"
+          className="text-center mb-20"
         >
-          <h2 className="text-3xl font-bold mb-2 text-gray-950 dark:text-gray-50">My Toolkit 💻</h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-12">Technologies I work with</p>
+          <h2 className="text-4xl md:text-5xl font-serif font-bold mb-4">
+            Technical <span className="text-gradient-gold italic">Arsenal</span>
+          </h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto">
+            The tools and technologies I use to bring ideas to life.
+          </p>
         </motion.div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
-          {skills.map((skill, index) => (
-            <SkillIcon key={index} skill={skill} />
+        <div className="grid md:grid-cols-3 gap-8">
+          {skillCategories.map((category, index) => (
+            <motion.div
+              key={category.title}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+              className="glass-panel p-8 rounded-2xl border border-white/10"
+            >
+              <h3 className="text-xl font-bold mb-8 text-center border-b border-white/10 pb-4">
+                {category.title}
+              </h3>
+              <div className="grid grid-cols-2 gap-6">
+                {category.skills.map((skill) => (
+                  <motion.div
+                    key={skill.name}
+                    whileHover={{ scale: 1.05 }}
+                    className="flex flex-col items-center gap-3 group"
+                  >
+                    <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-white/5 group-hover:bg-white/10 transition-colors">
+                      <skill.icon size={24} style={{ color: skill.color }} className="grayscale group-hover:grayscale-0 transition-all duration-300" />
+                    </div>
+                    <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+                      {skill.name}
+                    </span>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
           ))}
         </div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          viewport={{ once: true }}
-          className="mt-12 text-center text-gray-600 dark:text-gray-400"
-        >
-          <p>And many more tools in my arsenal...</p>
-        </motion.div>
       </div>
     </section>
   )

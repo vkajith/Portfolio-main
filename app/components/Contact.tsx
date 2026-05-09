@@ -4,9 +4,8 @@ import { useState, useRef } from 'react';
 import { motion } from 'framer-motion'
 import { FaGithub, FaLinkedin } from 'react-icons/fa'
 import { FaXTwitter } from "react-icons/fa6";
-import { FiUser, FiMail, FiMessageSquare } from 'react-icons/fi'
+import { Send, User, Mail, MessageSquare } from 'lucide-react'
 import { handleSubmit } from '@/app/actions'
-
 import { IconType } from 'react-icons';
 
 const SocialIcon = ({ href, icon: Icon }: { href: string; icon: IconType }) => (
@@ -14,11 +13,11 @@ const SocialIcon = ({ href, icon: Icon }: { href: string; icon: IconType }) => (
     href={href}
     target="_blank"
     rel="noopener noreferrer"
-    className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+    className="w-12 h-12 flex items-center justify-center rounded-full bg-white/5 border border-white/10 hover:bg-accent-gold/20 hover:border-accent-gold/50 hover:text-accent-gold transition-all"
     whileHover={{ scale: 1.1 }}
     whileTap={{ scale: 0.9 }}
   >
-    <Icon className="w-8 h-8" />
+    <Icon className="w-5 h-5" />
   </motion.a>
 )
 
@@ -83,136 +82,120 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="py-24 bg-gray-50 dark:bg-gray-900">
-      <div className="container mx-auto px-6 max-w-6xl">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          viewport={{ once: true }}
-          className="text-center mb-12"
-        >
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900 dark:text-white">
-            <span className="gradient-text">Drop a message</span>
-          </h2>
-          <p className="mt-3 text-gray-600 dark:text-gray-300">I’d love to hear from you — say hello, share ideas, or collaborate.</p>
-        </motion.div>
+    <section id="contact" className="py-32 relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-accent-gold/5 rounded-full blur-[100px] pointer-events-none" />
 
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* Left: Socials / Short bio */}
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+          {/* Left: Content */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
-            className="glass rounded-xl p-8 border border-gray-200 dark:border-gray-700"
           >
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Let’s connect</h3>
-            <p className="mt-2 text-gray-600 dark:text-gray-300">Prefer socials? I’m active here:</p>
-            <div className="mt-6 flex gap-6">
-              <SocialIcon href="https://linkedin.com/in/vysyakh-ajith" icon={FaLinkedin} />
-              <SocialIcon href="https://x.com/whyshagajith" icon={FaXTwitter} />
-              <SocialIcon href="https://github.com/vkajith" icon={FaGithub} />
+            <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6">
+              Let&apos;s Create Something <span className="text-gradient-gold italic">Extraordinary</span>
+            </h2>
+            <p className="text-muted-foreground text-lg mb-12 leading-relaxed">
+              Whether you have a project in mind, want to discuss the latest tech trends, or just want to say hello, I&apos;m always open to new conversations.
+            </p>
+
+            <div className="space-y-8">
+              <div>
+                <h3 className="text-lg font-bold mb-4 text-foreground">Connect with me</h3>
+                <div className="flex gap-4">
+                  <SocialIcon href="https://linkedin.com/in/vysyakh-ajith" icon={FaLinkedin} />
+                  <SocialIcon href="https://x.com/whyshagajith" icon={FaXTwitter} />
+                  <SocialIcon href="https://github.com/vkajith" icon={FaGithub} />
+                </div>
+              </div>
             </div>
-            <div className="mt-8 h-px w-full bg-gradient-to-r from-accent-start/20 via-transparent to-accent-end/20" />
-            <p className="mt-8 text-sm text-gray-500 dark:text-gray-400">I typically respond within 24–48 hours.</p>
           </motion.div>
 
-          {/* Right: Message form */}
+          {/* Right: Form */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
             viewport={{ once: true }}
-            className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm"
+            className="glass-panel p-8 md:p-10 rounded-3xl border border-white/10"
           >
-            <form ref={formRef} onSubmit={onSubmit} className="p-8 space-y-6">
-              {/* Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Your name</label>
-                <div className={`flex items-center gap-3 px-4 py-3 rounded-lg border ${formErrors.name ? 'border-red-500 dark:border-red-400' : 'border-gray-200 dark:border-gray-700'} bg-white dark:bg-gray-800`}> 
-                  <FiUser className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            <form ref={formRef} onSubmit={onSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground ml-1">Your Name</label>
+                <div className="relative">
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <input
                     type="text"
                     name="name"
-                    placeholder="Jane Doe"
+                    placeholder="John Doe"
                     required
-                    className="w-full bg-transparent outline-none text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-accent-gold/50 transition-colors"
                   />
                 </div>
                 {formErrors.name && (
-                  <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} className="mt-2 text-sm text-red-500 dark:text-red-400">
-                    {formErrors.name}
-                  </motion.p>
+                  <p className="text-xs text-red-400 ml-1">{formErrors.name}</p>
                 )}
               </div>
 
-              {/* Email */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email address</label>
-                <div className={`flex items-center gap-3 px-4 py-3 rounded-lg border ${formErrors.email ? 'border-red-500 dark:border-red-400' : 'border-gray-200 dark:border-gray-700'} bg-white dark:bg-gray-800`}> 
-                  <FiMail className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground ml-1">Email Address</label>
+                <div className="relative">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <input
                     type="email"
                     name="email"
-                    placeholder="jane@doe.com"
+                    placeholder="john@example.com"
                     required
-                    className="w-full bg-transparent outline-none text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-accent-gold/50 transition-colors"
                   />
                 </div>
                 {formErrors.email && (
-                  <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} className="mt-2 text-sm text-red-500 dark:text-red-400">
-                    {formErrors.email}
-                  </motion.p>
+                  <p className="text-xs text-red-400 ml-1">{formErrors.email}</p>
                 )}
               </div>
 
-              {/* Message */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Your message</label>
-                <div className={`flex items-start gap-3 px-4 py-3 rounded-lg border ${formErrors.message ? 'border-red-500 dark:border-red-400' : 'border-gray-200 dark:border-gray-700'} bg-white dark:bg-gray-800`}> 
-                  <FiMessageSquare className="mt-1 w-5 h-5 text-gray-500 dark:text-gray-400" />
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground ml-1">Message</label>
+                <div className="relative">
+                  <MessageSquare className="absolute left-4 top-4 w-5 h-5 text-muted-foreground" />
                   <textarea
                     name="message"
-                    placeholder="Say hi, share feedback, or propose a collaboration…"
+                    placeholder="Tell me about your project..."
                     required
-                    rows={6}
-                    className="w-full bg-transparent outline-none text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 resize-none"
+                    rows={4}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-accent-gold/50 transition-colors resize-none"
                   />
                 </div>
                 {formErrors.message && (
-                  <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} className="mt-2 text-sm text-red-500 dark:text-red-400">
-                    {formErrors.message}
-                  </motion.p>
+                  <p className="text-xs text-red-400 ml-1">{formErrors.message}</p>
                 )}
               </div>
 
-              {/* Submit */}
-              <motion.button
+              <button
                 type="submit"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="btn-primary w-full"
                 disabled={isLoading}
+                className="w-full bg-foreground text-background font-bold py-4 rounded-xl hover:bg-accent-gold hover:text-white transition-all duration-300 flex items-center justify-center gap-2 group"
               >
                 {isLoading ? (
-                  <svg className="animate-spin h-5 w-5 mx-auto" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
+                  <div className="w-6 h-6 border-2 border-current border-t-transparent rounded-full animate-spin" />
                 ) : (
-                  'Send message'
+                  <>
+                    Send Message
+                    <Send className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </>
                 )}
-              </motion.button>
+              </button>
 
               {showSuccess && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="mt-2 p-4 border border-green-300/50 dark:border-green-700/50 rounded-lg bg-green-50 dark:bg-green-900/40 text-green-700 dark:text-green-100"
+                  className="p-4 rounded-xl bg-green-500/10 border border-green-500/20 text-green-500 text-center text-sm font-medium"
                 >
-                  Thank you for your message! I’ll get back to you soon.
+                  Message sent successfully! I&apos;ll get back to you soon.
                 </motion.div>
               )}
             </form>

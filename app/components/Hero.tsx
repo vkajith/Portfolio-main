@@ -1,93 +1,76 @@
 'use client'
 
-import { FaReact, FaFileAlt, FaNodeJs } from "react-icons/fa";
-import { SiTypescript } from "react-icons/si";
-import FloatingElements from "./ui/floating-elements";
-import ParticleBackground from "./ui/ParticleBackground";
-import { motion } from 'framer-motion'
+import { motion } from "framer-motion"
+import { ArrowDown } from "lucide-react"
 
 const Hero = () => {
-  return(
-    <section id="about" className="min-h-screen flex items-center justify-center relative overflow-hidden">
-      {/* Gradient Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white via-indigo-50/30 to-white dark:from-gray-900 dark:via-indigo-900/10 dark:to-gray-900" />
-      
-      {/* Animated Grid Background */}
-      <div className="absolute inset-0 bg-grid-gray-900/[0.02] dark:bg-grid-white/[0.02] bg-[size:60px_60px] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,black,transparent)]" />
-
-      {/* Subtle particles */}
-      <div className="absolute inset-0 opacity-[0.35]">
-        <ParticleBackground />
-      </div>
-      
-      {/* Floating Icons */}
-      <div className="absolute inset-0 pointer-events-none"> 
-        <FloatingElements delay={0}>
-          <FaReact className="absolute top-20 left-[20%] text-indigo-500/40 dark:text-indigo-400/40 w-14 h-14"/>
-        </FloatingElements>
-        <FloatingElements delay={1}>
-          <FaNodeJs className="absolute top-40 right-[25%] text-green-500/40 dark:text-green-400/40 w-12 h-12"/>
-        </FloatingElements>
-        <FloatingElements delay={2}>
-          <SiTypescript className="absolute top-[34rem] left-[25%] text-blue-500/40 dark:text-blue-400/40 w-11 h-11"/>
-        </FloatingElements>
+  return (
+    <section id="about" className="min-h-screen flex items-center justify-center relative overflow-hidden bg-background">
+      {/* Abstract Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-[30%] -left-[10%] w-[70vw] h-[70vw] bg-purple-500/20 rounded-full blur-[100px] animate-float opacity-50" />
+        <div className="absolute top-[20%] -right-[10%] w-[50vw] h-[50vw] bg-blue-500/20 rounded-full blur-[100px] animate-float opacity-50" style={{ animationDelay: '2s' }} />
+        <div className="absolute -bottom-[20%] left-[20%] w-[60vw] h-[60vw] bg-emerald-500/10 rounded-full blur-[100px] animate-float opacity-30" style={{ animationDelay: '4s' }} />
       </div>
 
-      <div className="text-center z-10 px-2 relative">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="px-2"
-        >
-          <h1 className="text-5xl md:text-7xl font-bold mb-6">
-            Hey, I&apos;m{' '}
-            <span className="relative inline-block">
-              <span className="gradient-text">Vysyakh</span>
+      <div className="container mx-auto px-6 relative z-10">
+        <div className="max-w-4xl mx-auto">
+          {/* Status Pill */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="flex items-center gap-2 mb-8 bg-white/5 w-fit px-4 py-2 rounded-full border border-white/10 backdrop-blur-sm"
+          >
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
             </span>
-          </h1>
-        </motion.div>
+            <span className="text-sm font-medium text-gray-300">Available for work</span>
+          </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="px-2"
-        >
-          <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-200 mb-8">
-            Software Engineer & Tech Enthusiast 👨‍💻
-          </p>
-        </motion.div>
+          {/* Main Typography */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="space-y-4"
+          >
+            <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter text-white">
+              Vysyakh
+            </h1>
+            <h1 className="text-6xl md:text-8xl lg:text-9xl font-serif italic text-gray-400">
+              Ajith
+            </h1>
+          </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="flex flex-col sm:flex-row gap-4 justify-center"
-        >
-          <motion.a
-            href="/resume.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-primary group"
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.95 }}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="mt-12 max-w-2xl"
           >
-            Resume
-            <FaFileAlt className="ml-2 group-hover:rotate-12 transition-transform" />
-          </motion.a>
-          <motion.a
-            href="#contact"
-            className="btn-outline"
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            Get in Touch
-          </motion.a>
-        </motion.div>
+            <p className="text-xl md:text-2xl text-gray-400 leading-relaxed">
+              Product Designer & Developer shaping pixels into
+              <span className="text-white font-serif italic mx-2">meaningful experiences</span>
+              with heart.
+            </p>
+          </motion.div>
+        </div>
       </div>
+
+      {/* Scroll Indicator */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1, duration: 1 }}
+        className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-gray-500/50"
+      >
+        <span className="text-xs uppercase tracking-widest">Scroll</span>
+        <ArrowDown className="animate-bounce w-4 h-4" />
+      </motion.div>
     </section>
   )
 }
 
-export default Hero;
+export default Hero

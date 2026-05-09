@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
+  <rect width="180" height="180" rx="36" fill="#F5F0E8"/>
+  <g transform="translate(56 50)">
+    <!-- carrot body -->
+    <path d="M14 18 L60 18 L48 78 Q37 84 26 78 Z" fill="#E07B3F"/>
+    <path d="M22 28 L24 72 M37 28 L37 76 M52 28 L50 72"
+          stroke="#000" stroke-opacity="0.18" stroke-width="2.2" stroke-linecap="round"/>
+    <!-- leaves -->
+    <ellipse cx="22" cy="10" rx="6" ry="13" fill="#6B7F3E" transform="rotate(-22 22 10)"/>
+    <ellipse cx="37" cy="4"  rx="7" ry="15" fill="#8BA34E"/>
+    <ellipse cx="52" cy="10" rx="6" ry="13" fill="#6B7F3E" transform="rotate(22 52 10)"/>
+  </g>
+</svg>

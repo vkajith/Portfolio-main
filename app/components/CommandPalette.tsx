@@ -10,9 +10,11 @@ import {
   Github,
   Linkedin,
   Mail,
+  Coffee,
   Rabbit,
   Workflow,
 } from 'lucide-react'
+import { profile } from '@/app/lib/profile'
 import { openPompu } from '@/app/lib/pompuEvents'
 
 type Item = {
@@ -45,7 +47,8 @@ export default function CommandPalette() {
       { id: 'systems', label: 'The platform', hint: 'builder · gateway · evals · analytics', icon: Workflow, run: () => scrollToId('systems') },
       { id: 'notes', label: 'Writing', hint: 'Substack', icon: BookOpen, run: () => scrollToId('notes') },
       { id: 'contact', label: 'Send a message', hint: 'contact form', icon: Mail, run: () => scrollToId('contact') },
-      { id: 'resume', label: 'Open résumé PDF', hint: 'new tab', icon: FileText, run: () => window.open('/resume.pdf', '_blank') },
+      { id: 'resume', label: 'Open résumé PDF', hint: 'new tab', icon: FileText, run: () => window.open(profile.links.resume, '_blank') },
+      { id: 'coffee', label: 'Buy me a coffee', hint: 'support the work', icon: Coffee, run: () => window.open(profile.links.coffee, '_blank') },
       { id: 'github', label: 'GitHub', hint: 'github.com/vkajith', icon: Github, run: () => window.open('https://github.com/vkajith', '_blank') },
       { id: 'linkedin', label: 'LinkedIn', hint: 'vysyakh-ajith', icon: Linkedin, run: () => window.open('https://linkedin.com/in/vysyakh-ajith', '_blank') },
     ],

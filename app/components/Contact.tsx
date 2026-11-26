@@ -1,7 +1,8 @@
 'use client'
 
 import { FormEvent, useState } from 'react'
-import { ArrowUpRight, CalendarDays, Send } from 'lucide-react'
+import { ArrowUpRight, CalendarDays, Coffee, Send } from 'lucide-react'
+import { profile } from '@/app/lib/profile'
 import { openPompu } from '@/app/lib/pompuEvents'
 
 type Status = 'idle' | 'sending' | 'sent' | 'error'
@@ -58,6 +59,7 @@ export default function Contact() {
           <p className="text-[14px] leading-relaxed text-[var(--text-secondary)]">For AI agent platforms, LLM infrastructure, product engineering, or a thoughtful hello. Pompu will not take it personally if you skip the small talk.</p>
           <button type="button" onClick={() => openPompu({ book: true })} className="mt-7 inline-flex items-center gap-2 text-[13px] font-mono text-[var(--accent)] link-hover"><CalendarDays className="w-4 h-4" aria-hidden /> Book a call with Pompu <ArrowUpRight className="w-3 h-3" aria-hidden /></button>
           <p className="mt-3 text-[11px] leading-relaxed text-[var(--text-muted)]">Pick a real 15 or 30 minute slot on Vysyakh&apos;s calendar — no back-and-forth.</p>
+          <a href={profile.links.coffee} target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex items-center gap-2 text-[12px] font-mono text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"><Coffee className="w-3.5 h-3.5" aria-hidden /> Buy me a coffee <ArrowUpRight className="w-3 h-3" aria-hidden /></a>
         </div>
         <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-4">
           <div className="grid sm:grid-cols-2 gap-4">

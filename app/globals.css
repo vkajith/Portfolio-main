@@ -113,6 +113,48 @@
   box-shadow: 0 0 0 1px rgba(0, 230, 255, 0.25), 0 8px 28px rgba(255, 61, 200, 0.10);
 }
 
+/* ---- Conversation bubbles ---- */
+.pompu-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  color: var(--accent);
+  background: var(--accent-soft-10);
+  border: 1px solid var(--accent-soft-25);
+}
+
+.pompu-bubble {
+  max-width: 100%;
+  border-radius: 14px;
+  padding: 7px 10px;
+  line-height: 1.6;
+  border: 1px solid transparent;
+  overflow-wrap: anywhere;
+}
+
+.pompu-bubble--pompu {
+  color: var(--text-secondary);
+  background: var(--bg-primary);
+  border-color: var(--border-color);
+  border-top-left-radius: 4px;
+}
+
+.pompu-bubble--user {
+  color: var(--text-primary);
+  background: var(--accent-soft-10);
+  border-color: var(--accent-soft-25);
+  border-top-right-radius: 4px;
+}
+
+.pompu-bubble--muted {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
 /* ===========================================================
    Animations — kept across themes unless noted
    =========================================================== */
@@ -655,8 +697,8 @@ button:focus-visible {
 [data-theme="dark"] .neon-box { box-shadow: 0 0 18px var(--accent-glow); }
 
 /* ---- Pompu: hero slot → fixed dock ---- */
-.pompu-slot { height: clamp(440px, 64vh, 580px); }
-@media (max-width: 1023px) { .pompu-slot { height: 460px; } }
+.pompu-slot { height: clamp(400px, 56vh, 520px); }
+@media (max-width: 1023px) { .pompu-slot { height: 400px; } }
 
 .pompu-dock {
   position: fixed;

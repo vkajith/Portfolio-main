@@ -12,7 +12,7 @@ Personal portfolio for **Vysyakh Ajith**, positioned as an **AI Agent Platform E
 1. **Hero** — positioning, stats, CTAs, and **Pompu** (a quirky rabbit concierge chat) as the centrepiece.
 2. **The story** — a scroll-driven timeline (oldest → newest) beside a sticky **résumé paper** that "writes" each entry as its chapter scrolls into view.
 3. **The platform** — an explorable loop: Agent Builder → LLM Gateway → Agentic Analytics → LLM-as-Judge → Agent Harness.
-4. **Building** (projects; hidden while empty) → **Writing** (Substack) → **Contact**.
+4. **Building** (projects, data-driven from `profile.ts`) → **Writing** (Substack) → **Contact**.
 
 Once the hero scrolls away, Pompu docks into a bottom-right pill/panel and follows the visitor. Pompu answers from verified facts and **books real 15/30-minute calls on Vysyakh's Cal.com calendar inside the chat**.
 
@@ -28,7 +28,7 @@ Live: vysyakhajith.com
 - **TypeScript** strict
 - **Tailwind CSS v3** + a small set of CSS variables in `app/globals.css`
 - **lucide-react** for icons (notably `Rabbit`)
-- **react-icons** only for `FaXTwitter` (the X/Twitter logo isn't in lucide)
+- **react-icons** for `FaXTwitter` and the mono Simple Icons brand marks rendered by `ToolIcon.tsx`
 - **lenis** for smooth scroll (mounted globally via `app/components/SmoothScroll.tsx`)
 - **@vercel/analytics**
 - **Google Gemini** (`gemini-2.0-flash`) via REST — no SDK
@@ -71,12 +71,13 @@ app/
 │   ├── ResumePaper.tsx         Sticky one-page résumé; the chapter in view expands, others collapse to one line.
 │   ├── SelectedSystems.tsx     Platform loop (click to explore) + infra card; "ask pompu about this".
 │   ├── Projects.tsx            Renders `projects` from profile.ts; returns null when empty.
+│   ├── ToolIcon.tsx            Mono brand mark for a tool name (react-icons/si); null when unknown.
 │   ├── Notes.tsx               Substack RSS (server component, revalidates hourly).
 │   ├── Contact.tsx             Contact form + "book a call with Pompu".
 │   ├── CommandPalette.tsx / CarrotRain.tsx / ThemeToggle.tsx / SmoothScroll.tsx
 ```
 
-`public/` holds `resume.pdf` only.
+`public/` holds `resume.pdf` only. The live résumé link (`profile.links.resume`) points at the hosted Google Drive PDF; the local file is kept as a fallback.
 
 ---
 
@@ -90,7 +91,7 @@ npm run lint       # next lint, must be clean
 npx tsc --noEmit   # type-check, must be clean
 ```
 
-Build size budget: the `/` route is **19.9 kB** (First Load 125 kB) — the booking widget, scroll story, résumé paper and platform loop are client components. If a change pushes it by more than ~5 kB, justify it in the PR.
+Build size budget: the `/` route is **25.6 kB** (First Load 131 kB) — the booking widget, scroll story, résumé paper, platform loop, and tool marks are client components. If a change pushes it by more than ~5 kB, justify it in the PR. (The +5.7 kB from 19.9 kB is the three project cards, eight Simple Icons marks, and the conversational chat bubbles; trimming `ToolIcon` to only rendered marks kept it under the soft cap.)
 
 ---
 
@@ -139,7 +140,11 @@ Two themes defined in `app/globals.css`. Light is the `:root` default. Dark live
 
 Don't introduce new top-level palette tokens without updating this table.
 
-### 6.1.1 Glow utilities
+### 6.1.1 Tool marks
+
+`ToolIcon.tsx` maps a tool name to its Simple Icons mark (`react-icons/si`). Marks are monochrome (`currentColor`), sized `w-3 h-3`, and `aria-hidden`; unknown names render nothing so a chip falls back to text. Use it inside tag/stack chips rather than loading per-tool SVGs or PNGs.
+
+### 6.1.2 Glow utilities
 
 - `.neon-glow` — adds a magenta text-shadow scaled by `--glow-strength`. No-op in light mode.
 - `.neon-glow-cyan` — same with cyan, used sparingly.
@@ -266,7 +271,7 @@ For a global side-effect (like `/carrot`), dispatch a `CustomEvent` and listen f
 - **Slots are fetched in the visitor's time zone** (so day groupings match their calendar) and normalised to UTC ISO; the widget formats them back with `Intl`.
 - **Gemini is told to rephrase, not invent.** For a matched topic it only gets that one fact; actions/intent always come from the grounded topic, never the model.
 - **Lenis smooth scroll** intercepts programmatic `window.scrollTo`; use `scrollIntoView` on elements, which Lenis handles.
-- **`public/resume.pdf` must be kept in sync with `profile.ts` by hand** — the site renders the résumé from data, the PDF is the download.
+- **`profile.links.resume` points at the hosted Google Drive PDF**, not `public/resume.pdf`. The site renders the résumé from `profile.ts`; update the Drive link there when the PDF changes. Keep the local file only as a fallback.
 - **Don't run `next build` while `next dev` is running** — both write `.next/`, and the dev server ends up serving an unstyled page.
 - **Gemini latency is spiky** (1–7s, occasional 503). The chat route aborts at 4.5s and serves the grounded reply.
 

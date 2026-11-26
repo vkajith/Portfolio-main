@@ -53,7 +53,6 @@ export const profile = {
     'Fullstack engineer with 5+ years shipping enterprise products, now specialising in AI agent platforms — LLM gateways, agent orchestration, evaluation infrastructure, and analytics at scale.',
   stats: [
     { value: '10M+', label: 'agent events / month' },
-    { value: '4', label: 'LLM providers routed' },
     { value: '5+', label: 'years shipping' },
   ],
   links: {
@@ -62,7 +61,8 @@ export const profile = {
     x: 'https://x.com/whyshagajith',
     email: 'vysyakhajith@gmail.com',
     substack: 'https://vysyakhajith.substack.com/',
-    resume: '/resume.pdf',
+    resume: 'https://drive.google.com/file/d/1mxWtgrrJaIzjdaYrRdhMaRFQeRhiUHOF/view?usp=sharing',
+    coffee: 'https://buymeacoffee.com/vkajithdev4',
   },
 }
 
@@ -245,7 +245,29 @@ export const skills: Record<string, string[]> = {
 
 // Add entries here and the Projects section appears automatically.
 // Leave empty to hide the section entirely.
-export const projects: Project[] = []
+export const projects: Project[] = [
+  {
+    title: 'Self-hosted ClickHouse for multi-tenant analytics',
+    summary:
+      'Per-tenant databases backed by customer-managed KMS keys and scoped IAM roles, with zero-touch provisioning on signup. Ingests 10M+ agent and eval events a month with strict tenant isolation.',
+    tags: ['ClickHouse', 'AWS KMS', 'IAM', 'Terraform'],
+    status: 'live',
+  },
+  {
+    title: 'Agentic Analytics framework',
+    summary:
+      'A multi-tenant Apache Superset distribution with full MCP support: agents discover datasets, run scoped queries, and publish dashboards inside each tenant. An analytics agent turns plain-English questions into SQL.',
+    tags: ['Apache Superset', 'MCP', 'ClickHouse', 'Agno'],
+    status: 'live',
+  },
+  {
+    title: 'Terminal analytical agent',
+    summary:
+      'A terminal-first agent that turns a question into a Duckle pipeline on DuckDB, runs it locally, and prints the result — analytical work without a notebook, warehouse, or dashboard.',
+    tags: ['Duckle', 'DuckDB', 'CLI', 'Agents'],
+    status: 'live',
+  },
+]
 
 // Cal.com: derived from CAL_COM_BOOKING_URL (https://cal.com/<username>/<slug>).
 export const bookingDurations = [

@@ -216,6 +216,13 @@ export default function Terminal({
   }
 
   const showSuggestions = messages.length <= 1 && !isTyping && !booking
+  const lastMessage = messages[messages.length - 1]
+  const askedQuestions = new Set(
+    messages.filter((m) => m.type === 'user').map((m) => m.content.toLowerCase())
+  )
+  const followUps = SUGGESTIONS.filter((s) => !askedQuestions.has(s.toLowerCase())).slice(0, 2)
+  const showFollowUps =
+    !isTyping && !booking && lastMessage?.type === 'response' && followUps.length > 0
   const lastResponseIdx = messages.map((m) => m.type).lastIndexOf('response')
   const chip = 'tag-interactive text-[10.5px] font-medium px-2 py-0.5 rounded-full border border-[var(--accent)]/40 text-[var(--accent)]'
 
@@ -251,73 +258,87 @@ export default function Terminal({
         </div>
       </div>
 
-      <div ref={scrollRef} data-lenis-prevent className="flex-1 overflow-y-auto overscroll-contain px-3.5 py-2.5 space-y-2 pompu-scroll font-mono text-[12.5px] leading-[1.65] relative" aria-live="polite">
+      <div ref={scrollRef} data-lenis-prevent className="flex-1 overflow-y-auto overscroll-contain px-3.5 py-2.5 pompu-scroll font-mono text-[12.5px] leading-[1.65] relative" aria-live="polite">
         <span aria-hidden className="pointer-events-none select-none absolute right-2 bottom-1 text-[44px] opacity-[0.06] leading-none">🥕</span>
-        {messages.map((message, index) => (
-          <div key={`${message.type}-${index}`} className="animate-fade-in-up" style={{ animationDelay: `${Math.min(index, 4) * 0.03}s` }}>
-            {message.type === 'system' && (
-              <div className="text-[var(--text-muted)] italic text-[11.5px] flex items-start gap-1.5">
-                <Rabbit className="w-3 h-3 mt-[3px] text-[var(--accent)] shrink-0" aria-hidden />
-                <span>{message.content}</span>
-              </div>
-            )}
-            {message.type === 'user' && (
-              <div className="mt-1.5">
-                <span className="text-[var(--accent)] neon-glow">❯</span>
-                <span className="text-[var(--text-primary)] ml-1.5">{message.content}</span>
-              </div>
-            )}
-            {message.type === 'response' && (
-              <div className="ml-3 py-0.5" style={{ borderLeft: '2px solid var(--accent-soft-35)', paddingLeft: '8px' }}>
-                <div className="text-[var(--text-secondary)] leading-[1.7] whitespace-pre-wrap flex items-start gap-1.5">
-                  <Rabbit className="w-3 h-3 mt-[3px] text-[var(--accent)] shrink-0" aria-hidden />
-                  <span>{message.content}</span>
+        <div className="flex min-h-full flex-col justify-end gap-2.5">
+          {messages.map((message, index) => (
+            <div key={`${message.type}-${index}`} className="animate-fade-in-up" style={{ animationDelay: `${Math.min(index, 4) * 0.03}s` }}>
+              {message.type === 'system' && (
+                <div className="flex items-start gap-2">
+                  <span className="pompu-avatar"><Rabbit className="w-3 h-3" aria-hidden /></span>
+                  <div className="pompu-bubble pompu-bubble--pompu pompu-bubble--muted w-fit text-[11.5px]">{message.content}</div>
                 </div>
-                {(message.actions?.length ?? 0) > 0 && index === lastResponseIdx && !booking ? (
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    {message.actions!.map((action) => (
-                      <button key={`${action.label}-${action.target}`} onClick={() => runAction(action)} className={chip}>
-                        {action.label}
-                        {action.kind === 'book' ? <CalendarPlus className="inline w-2.5 h-2.5 ml-1" aria-hidden /> : <ArrowUpRight className="inline w-2.5 h-2.5 ml-1" aria-hidden />}
-                      </button>
-                    ))}
+              )}
+              {message.type === 'user' && (
+                <div className="flex justify-end">
+                  <div className="pompu-bubble pompu-bubble--user max-w-[85%] text-[12px]">{message.content}</div>
+                </div>
+              )}
+              {message.type === 'response' && (
+                <div className="flex items-start gap-2">
+                  <span className="pompu-avatar"><Rabbit className="w-3 h-3" aria-hidden /></span>
+                  <div className="min-w-0 flex-1">
+                    <div className="pompu-bubble pompu-bubble--pompu w-fit whitespace-pre-wrap text-[12px]">{message.content}</div>
+                    {(message.actions?.length ?? 0) > 0 && index === lastResponseIdx && !booking ? (
+                      <div className="flex flex-wrap gap-1.5 mt-1.5">
+                        {message.actions!.map((action) => (
+                          <button key={`${action.label}-${action.target}`} onClick={() => runAction(action)} className={chip}>
+                            {action.label}
+                            {action.kind === 'book' ? <CalendarPlus className="inline w-2.5 h-2.5 ml-1" aria-hidden /> : <ArrowUpRight className="inline w-2.5 h-2.5 ml-1" aria-hidden />}
+                          </button>
+                        ))}
+                      </div>
+                    ) : null}
                   </div>
-                ) : null}
+                </div>
+              )}
+            </div>
+          ))}
+
+          {isTyping && (
+            <div className="flex items-start gap-2">
+              <span className="pompu-avatar"><Rabbit className="w-3 h-3 ear-twitch" aria-hidden /></span>
+              <div className="pompu-bubble pompu-bubble--pompu w-fit flex items-center gap-1">
+                <span className="typing-dot text-[8px]">●</span>
+                <span className="typing-dot text-[8px]">●</span>
+                <span className="typing-dot text-[8px]">●</span>
               </div>
-            )}
-          </div>
-        ))}
+            </div>
+          )}
 
-        {isTyping && (
-          <div className="flex items-center gap-1.5 mt-1 ml-3 text-[var(--text-muted)]">
-            <Rabbit className="w-3 h-3 text-[var(--accent)] ear-twitch" aria-hidden />
-            <span className="typing-dot text-[8px]">●</span>
-            <span className="typing-dot text-[8px]">●</span>
-            <span className="typing-dot text-[8px]">●</span>
-          </div>
-        )}
+          {booking && (
+            <BookingWidget
+              onCancel={() => setBooking(false)}
+              onBooked={(summary) => {
+                setBooking(false)
+                addReply({ message: summary, intent: 'booking' })
+                window.dispatchEvent(new CustomEvent('pompu:carrot-rain'))
+              }}
+            />
+          )}
 
-        {booking && (
-          <BookingWidget
-            onCancel={() => setBooking(false)}
-            onBooked={(summary) => {
-              setBooking(false)
-              addReply({ message: summary, intent: 'booking' })
-              window.dispatchEvent(new CustomEvent('pompu:carrot-rain'))
-            }}
-          />
-        )}
+          {showSuggestions && (
+            <div className="flex flex-wrap gap-1.5 pt-1">
+              {SUGGESTIONS.map((s) => (
+                <button key={s} onClick={() => handleSubmit(s)} className={chip}>{s}</button>
+              ))}
+              <button onClick={startBooking} className={chip}>
+                Book a call <CalendarPlus className="inline w-2.5 h-2.5 ml-0.5" aria-hidden />
+              </button>
+            </div>
+          )}
 
-        {showSuggestions && (
-          <div className="flex flex-wrap gap-1.5 pt-2">
-            {SUGGESTIONS.map((s) => (
-              <button key={s} onClick={() => handleSubmit(s)} className={chip}>{s}</button>
-            ))}
-            <button onClick={startBooking} className={chip}>
-              Book a call <CalendarPlus className="inline w-2.5 h-2.5 ml-0.5" aria-hidden />
-            </button>
-          </div>
-        )}
+          {showFollowUps && (
+            <div className="flex flex-wrap gap-1.5 pl-7">
+              {followUps.map((s) => (
+                <button key={s} onClick={() => handleSubmit(s)} className={chip}>{s}</button>
+              ))}
+              <button onClick={startBooking} className={chip}>
+                Book a call <CalendarPlus className="inline w-2.5 h-2.5 ml-0.5" aria-hidden />
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="flex items-center px-3.5 py-2 shrink-0" style={{ borderTop: '1px solid var(--border-color)', background: 'var(--accent-soft-05)' }}>

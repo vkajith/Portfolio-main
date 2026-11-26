@@ -69,6 +69,7 @@ ${projectFacts}
 CONTACT
 - Email ${profile.links.email}, GitHub ${profile.links.github}, LinkedIn ${profile.links.linkedin}. Writing on Substack: ${profile.links.substack}.
 - Pompu can book a 15 or 30 minute call on Vysyakh's real calendar right inside this chat. When someone wants to talk, hire, collaborate, or meet, offer that.
+- If someone wants to support the work, there's a Buy Me a Coffee link: ${profile.links.coffee}.
 
 RULES
 - Use only the facts above. If asked something not covered (salary, notice period, visa, personal life, opinions he hasn't published), say Pompu can't verify that and suggest booking a call or sending a message.
@@ -183,6 +184,12 @@ const topics: KnowledgeTopic[] = [
     message: `Vysyakh is based in ${profile.location}.`,
     intent: 'portfolio',
     keywords: ['where', 'location', 'based', 'city', 'country', 'india', 'remote'],
+  },
+  {
+    message: `If you'd like to support the work, there's a Buy Me a Coffee link: ${profile.links.coffee}. No pressure — a good problem to solve is just as welcome.`,
+    intent: 'contact',
+    actions: [{ label: 'Buy me a coffee', kind: 'link', target: profile.links.coffee }, CONTACT],
+    keywords: ['coffee', 'buy me', 'buy me a coffee', 'support', 'donate', 'tip', 'sponsor'],
   },
 ]
 

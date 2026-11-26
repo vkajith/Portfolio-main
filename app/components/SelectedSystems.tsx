@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { BarChart3, Gauge, GitBranch, Network, Rabbit, Shield, Workflow } from 'lucide-react'
 import { infraProject, platform } from '@/app/lib/profile'
 import { openPompu } from '@/app/lib/pompuEvents'
+import ToolIcon from './ToolIcon'
 
 const icons: Record<string, React.ComponentType<{ className?: string }>> = {
   builder: Workflow,
@@ -69,7 +70,8 @@ export default function SelectedSystems() {
             <p className="max-w-2xl text-[14.5px] leading-relaxed text-[var(--text-secondary)]">{piece.detail}</p>
             <div className="flex flex-wrap gap-1.5 mt-5">
               {piece.stack.map((s) => (
-                <span key={s} className="tag-interactive text-[11px] font-medium px-2.5 py-0.5 rounded-full border border-[var(--accent)]/40 text-[var(--accent)]">
+                <span key={s} className="tag-interactive inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-0.5 rounded-full border border-[var(--accent)]/40 text-[var(--accent)]">
+                  <ToolIcon name={s} className="w-3 h-3 shrink-0" />
                   {s}
                 </span>
               ))}
@@ -91,7 +93,10 @@ export default function SelectedSystems() {
             <p className="max-w-3xl text-[13.5px] leading-relaxed text-[var(--text-secondary)]">{infraProject.summary}</p>
             <div className="flex flex-wrap gap-1.5 mt-4">
               {infraProject.tags.map((s) => (
-                <span key={s} className="text-[11px] font-mono text-[var(--text-muted)]">#{s.replace(/\s+/g, '')}</span>
+                <span key={s} className="inline-flex items-center gap-1 text-[11px] font-mono text-[var(--text-muted)]">
+                  <ToolIcon name={s} className="w-3 h-3 shrink-0" />
+                  #{s.replace(/\s+/g, '')}
+                </span>
               ))}
             </div>
           </div>

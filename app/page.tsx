@@ -1,3 +1,5 @@
+import { Coffee } from 'lucide-react'
+import { profile } from './lib/profile'
 import Hero from './components/Hero'
 import CareerStory from './components/CareerStory'
 import SelectedSystems from './components/SelectedSystems'
@@ -30,6 +32,14 @@ export default function Home() {
         <p className="text-[11px] text-[var(--text-muted)] font-mono">
           &copy; {new Date().getFullYear()} Vysyakh Ajith — built with help from Pompu <span aria-hidden>🐰🥕</span>
         </p>
+        <a
+          href={profile.links.coffee}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-mono text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
+        >
+          <Coffee className="w-3.5 h-3.5" aria-hidden /> Buy Pompu a coffee
+        </a>
       </footer>
 
       {/* Globals (PompuShell lives in the Hero and docks itself) */}

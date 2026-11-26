@@ -1,5 +1,6 @@
 import { ArrowUpRight } from 'lucide-react'
 import { projects } from '@/app/lib/profile'
+import ToolIcon from './ToolIcon'
 
 // Data-driven from profile.ts. Renders nothing until there are entries.
 export default function Projects() {
@@ -30,7 +31,10 @@ export default function Projects() {
                 <div className="mt-4 flex items-center justify-between gap-3">
                   <div className="flex flex-wrap gap-x-3 gap-y-1">
                     {p.tags.map((t) => (
-                      <span key={t} className="text-[11px] font-mono text-[var(--text-muted)]">#{t.replace(/\s+/g, '')}</span>
+                      <span key={t} className="inline-flex items-center gap-1 text-[11px] font-mono text-[var(--text-muted)]">
+                        <ToolIcon name={t} className="w-3 h-3 shrink-0" />
+                        #{t.replace(/\s+/g, '')}
+                      </span>
                     ))}
                   </div>
                   {p.link && <ArrowUpRight className="w-4 h-4 text-[var(--text-muted)] group-hover:text-[var(--accent)] transition-colors" aria-hidden />}

@@ -19,6 +19,7 @@ const SYSTEMS: PompuAction = { label: 'Explore the platform', kind: 'scroll', ta
 const EXPERIENCE: PompuAction = { label: 'Walk the timeline', kind: 'scroll', target: '#experience' }
 const WRITING: PompuAction = { label: 'Read the writing', kind: 'scroll', target: '#notes' }
 const CONTACT: PompuAction = { label: 'Send a message', kind: 'scroll', target: '#contact' }
+const PHOTOGRAPHY: PompuAction = { label: 'See the photography', kind: 'scroll', target: '#photography' }
 const RESUME: PompuAction = { label: 'Open resume', kind: 'link', target: profile.links.resume }
 
 // ---- Prompt: generated from profile.ts so it can never drift from the site ----
@@ -65,6 +66,9 @@ ${skillFacts}
 
 PROJECTS
 ${projectFacts}
+
+PHOTOGRAPHY
+- Outside the terminal, Vysyakh shoots photography. A curated gallery of frames lives in the photography section, with the full album linked on Google Photos.
 
 CONTACT
 - Email ${profile.links.email}, GitHub ${profile.links.github}, LinkedIn ${profile.links.linkedin}. Writing on Substack: ${profile.links.substack}.
@@ -191,15 +195,22 @@ const topics: KnowledgeTopic[] = [
     actions: [{ label: 'Buy me a coffee', kind: 'link', target: profile.links.coffee }, CONTACT],
     keywords: ['coffee', 'buy me', 'buy me a coffee', 'support', 'donate', 'tip', 'sponsor'],
   },
+  {
+    message: `Outside the terminal, Vysyakh shoots photography. The gallery is a curated set of frames — the full album lives on Google Photos.`,
+    intent: 'portfolio',
+    actions: [PHOTOGRAPHY],
+    keywords: ['photography', 'photo', 'photos', 'camera', 'shoot', 'gallery', 'frame', 'lens'],
+  },
 ]
 
 export const FALLBACK_RESPONSES: Record<string, string> = {
-  help: 'Ask about the agent platform, the career timeline, skills, or writing. Try /book to grab 15 or 30 minutes on Vysyakh\'s calendar, or /clear to start over.',
+  help: 'Ask about the agent platform, the career timeline, skills, writing, or photography. Try /book to grab 15 or 30 minutes on Vysyakh\'s calendar, or /clear to start over.',
   about: topics[0].message,
   experience: topics[7].message,
   systems: `he builds the loop behind production AI agents: ${platform.map((p) => p.name).join(' → ')}. ${observe.chapter}`,
   skills: topics[11].message,
-  contact: topics[15].message,
+  contact: 'Email, GitHub, LinkedIn — or book a call. Pompu can do the booking part right here.',
+  photography: 'The photography gallery sits between the projects and the writing — or open the full album on Google Photos.',
   resume: 'The résumé sits beside the timeline as you scroll — or grab the PDF.',
   book: topics[13].message,
   pompu: 'Pompu is Vysyakh\'s rabbit-shaped portfolio concierge: here to connect the right question to the right piece of work, and to book you onto his calendar.',
@@ -212,6 +223,7 @@ const COMMAND_ACTIONS: Record<string, PompuAction[]> = {
   systems: [SYSTEMS],
   skills: [EXPERIENCE],
   contact: [CONTACT, BOOK],
+  photography: [PHOTOGRAPHY],
   resume: [EXPERIENCE, RESUME],
   book: [BOOK],
 }

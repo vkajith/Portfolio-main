@@ -4,6 +4,7 @@ import Hero from './components/Hero'
 import CareerStory from './components/CareerStory'
 import SelectedSystems from './components/SelectedSystems'
 import Projects from './components/Projects'
+import Photography from './components/Photography'
 import Notes from './components/Notes'
 import Contact from './components/Contact'
 import CommandPalette from './components/CommandPalette'
@@ -24,6 +25,8 @@ export default function Home() {
       <Divider />
       <SelectedSystems />
       <Projects />
+      <Divider />
+      <Photography />
       <Divider />
       <Notes />
       <Contact />

@@ -24,6 +24,7 @@ const SLASH_COMMANDS: Record<string, string> = {
   '/systems': 'systems',
   '/skills': 'skills',
   '/contact': 'contact',
+  '/photography': 'photography',
   '/resume': 'resume',
   '/book': 'book',
   '/pompu': 'pompu',

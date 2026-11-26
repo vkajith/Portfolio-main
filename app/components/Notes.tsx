@@ -1,4 +1,5 @@
 import { BookOpen, ArrowUpRight } from 'lucide-react'
+import Reveal from './Reveal'
 
 type Post = {
   title: string
@@ -89,26 +90,28 @@ export default async function Notes() {
         <h2 className="text-[11px] font-mono uppercase tracking-[0.2em] text-[var(--text-muted)]">Writing</h2>
         <a href="https://vysyakhajith.substack.com/" target="_blank" rel="noopener noreferrer" className="text-[11px] font-mono text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors">All posts <ArrowUpRight className="inline w-2.5 h-2.5" aria-hidden /></a>
       </div>
-      <div className="space-y-3">
-        {posts.map((post) => (
-          <a
-            key={post.link}
-            href={post.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="card-hover group block rounded-xl p-5 sm:p-6 border border-[var(--border-color)] bg-[var(--bg-card)]"
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                {post.pubDate && <p className="text-[11px] font-mono text-[var(--text-muted)] mb-2">{formatDate(post.pubDate)}</p>}
-                <h3 className="font-semibold text-[var(--text-primary)] text-[15px] mb-1.5 group-hover:text-[var(--accent)] transition-colors">{post.title}</h3>
-                {post.description && <p className="text-[13.5px] leading-relaxed text-[var(--text-secondary)] line-clamp-2">{post.description}</p>}
+      <Reveal delay={60}>
+        <div className="space-y-3">
+          {posts.map((post) => (
+            <a
+              key={post.link}
+              href={post.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="card-hover group block rounded-xl p-5 sm:p-6 border border-[var(--border-color)] bg-[var(--bg-card)]"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  {post.pubDate && <p className="text-[11px] font-mono text-[var(--text-muted)] mb-2">{formatDate(post.pubDate)}</p>}
+                  <h3 className="font-semibold text-[var(--text-primary)] text-[15px] mb-1.5 group-hover:text-[var(--accent)] transition-colors">{post.title}</h3>
+                  {post.description && <p className="text-[13.5px] leading-relaxed text-[var(--text-secondary)] line-clamp-2">{post.description}</p>}
+                </div>
+                <ArrowUpRight className="shrink-0 w-4 h-4 text-[var(--text-muted)] group-hover:text-[var(--accent)] transition-colors mt-1" aria-hidden />
               </div>
-              <ArrowUpRight className="shrink-0 w-4 h-4 text-[var(--text-muted)] group-hover:text-[var(--accent)] transition-colors mt-1" aria-hidden />
-            </div>
-          </a>
-        ))}
-      </div>
+            </a>
+          ))}
+        </div>
+      </Reveal>
       </div>
     </section>
   )

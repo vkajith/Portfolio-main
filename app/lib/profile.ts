@@ -210,14 +210,14 @@ export const platform: PlatformPiece[] = [
   {
     id: 'analytics',
     name: 'Agentic Analytics',
-    short: 'Capture what happened',
+    short: 'Capture events',
     detail: 'Every agent call fans out into 10+ tool and evaluation events — 10M+ a month — landing in self-hosted ClickHouse. A multi-tenant Superset fork gives each account isolated dashboards, and an Agno AnalyticsAgent answers questions in plain English.',
     stack: ['ClickHouse', 'Superset', 'Agno'],
   },
   {
     id: 'evals',
     name: 'LLM-as-Judge',
-    short: 'Score the quality',
+    short: 'Score quality',
     detail: 'Temporal workflows run an LLM judge over thousands of interactions a day — task adherence, pillar-based quality scores, and automatic regression alerts when an agent gets worse.',
     stack: ['Temporal', 'Evals'],
   },
@@ -235,6 +235,13 @@ export const infraProject = {
   summary:
     'Per-tenant S3 buckets encrypted with customer-managed KMS keys, scoped IAM roles for zero cross-tenant leakage, and zero-touch onboarding that provisions storage, keys, and policies on signup.',
   tags: ['ClickHouse', 'AWS KMS', 'IAM', 'Terraform'],
+}
+
+export const photography = {
+  label: 'Photography',
+  headline: 'Light, place, and the patience to wait for the frame.',
+  summary:
+    'A running collection of frames from outside the terminal — the offline practice behind the platform work.',
 }
 
 export const skills: Record<string, string[]> = {

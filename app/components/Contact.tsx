@@ -4,6 +4,7 @@ import { FormEvent, useState } from 'react'
 import { ArrowUpRight, CalendarDays, Coffee, Send } from 'lucide-react'
 import { profile } from '@/app/lib/profile'
 import { openPompu } from '@/app/lib/pompuEvents'
+import Reveal from './Reveal'
 
 type Status = 'idle' | 'sending' | 'sent' | 'error'
 
@@ -52,7 +53,8 @@ export default function Contact() {
   return (
     <section id="contact" className="px-5 sm:px-10 lg:px-16 py-20"><div className="max-w-6xl mx-auto">
       <h2 className="text-[11px] font-mono uppercase tracking-[0.2em] text-[var(--text-muted)] mb-8">Start a conversation</h2>
-      <div className="grid lg:grid-cols-[0.8fr_1.2fr] rounded-xl overflow-hidden border border-[var(--border-color)] bg-[var(--bg-card)]">
+      <Reveal delay={60}>
+        <div className="grid lg:grid-cols-[0.8fr_1.2fr] rounded-xl overflow-hidden border border-[var(--border-color)] bg-[var(--bg-card)]">
         <div className="p-6 sm:p-8 border-b lg:border-b-0 lg:border-r border-[var(--border-color)]">
           <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--accent)] mb-3">Open channel</p>
           <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-3">Bring a good problem.</h3>
@@ -87,7 +89,8 @@ export default function Contact() {
             </button>
           </div>
         </form>
-      </div>
+        </div>
+      </Reveal>
       </div>
     </section>
   )

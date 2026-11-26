@@ -220,6 +220,26 @@
   animation: fadeInUp 0.6s ease-out forwards;
 }
 
+/* Scroll-reveal wrapper (components/Reveal.tsx) */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
 @keyframes slideInLeft {
   from {
     opacity: 0;
@@ -866,7 +886,19 @@ button:focus-visible {
   padding-bottom: 26px;
 }
 @media (max-width: 900px) {
-  .platform-loop { grid-template-columns: repeat(5, minmax(150px, 1fr)); overflow-x: auto; padding-bottom: 34px; }
+  .platform-loop {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow: visible;
+    padding-bottom: 0;
+  }
+  .platform-node:not(:last-of-type)::after { display: none; }
+  .platform-return { display: none; }
+}
+@media (max-width: 560px) {
+  .platform-loop { grid-template-columns: 1fr; }
+}
+@media (min-width: 561px) and (max-width: 900px) {
+  .platform-node:last-of-type { grid-column: 1 / -1; }
 }
 .platform-node {
   position: relative;
@@ -894,6 +926,18 @@ button:focus-visible {
 }
 .platform-node:hover { transform: translateY(-2px); border-color: var(--accent-soft-35); }
 .platform-node.is-active { color: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft-10); }
+.platform-node.is-active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 100%;
+  background: var(--accent);
+  transform-origin: left;
+  animation: nodeSweep 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes nodeSweep { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 [data-theme="dark"] .platform-node.is-active { box-shadow: 0 0 0 1px rgba(0, 230, 255, 0.3), 0 0 22px var(--accent-glow); }
 .platform-node-step { font-family: var(--font-jetbrains), monospace; font-size: 10px; color: var(--text-muted); }
 .platform-node-name { font-size: 13.5px; font-weight: 600; color: var(--text-primary); }
@@ -934,6 +978,7 @@ button:focus-visible {
   .pompu-dock,
   .pompu-pill,
   .pompu-pill--nudge,
-  .platform-node-timer { animation: none !important; }
+  .platform-node-timer,
+  .platform-node.is-active::before { animation: none !important; }
   .timeline-rail--fill, .timeline-step, .resume-entry, .resume-expand, .platform-node { transition: none !important; }
 }

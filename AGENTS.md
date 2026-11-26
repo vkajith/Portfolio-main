@@ -12,7 +12,7 @@ Personal portfolio for **Vysyakh Ajith**, positioned as an **AI Agent Platform E
 1. **Hero** — positioning, stats, CTAs, and **Pompu** (a quirky rabbit concierge chat) as the centrepiece.
 2. **The story** — a scroll-driven timeline (oldest → newest) beside a sticky **résumé paper** that "writes" each entry as its chapter scrolls into view.
 3. **The platform** — an explorable loop: Agent Builder → LLM Gateway → Agentic Analytics → LLM-as-Judge → Agent Harness.
-4. **Building** (projects, data-driven from `profile.ts`) → **Writing** (Substack) → **Contact**.
+4. **Building** (projects, data-driven from `profile.ts`) → **Photography** (Google Photos album) → **Writing** (Substack) → **Contact**.
 
 Once the hero scrolls away, Pompu docks into a bottom-right pill/panel and follows the visitor. Pompu answers from verified facts and **books real 15/30-minute calls on Vysyakh's Cal.com calendar inside the chat**.
 
@@ -53,6 +53,7 @@ app/
 │   ├── profile.ts              ★ SINGLE SOURCE OF TRUTH: identity, roles, highlights, platform, skills, projects.
 │   ├── context.ts              Pompu's prompt + grounded fallback topics, GENERATED from profile.ts.
 │   ├── cal.ts                  Server-only Cal.com v2 helpers (config from CAL_COM_BOOKING_URL, rate limit).
+│   ├── photography.ts          Server fetch + parser for the public Google Photos album; photo URL helpers.
 │   └── pompuEvents.ts          openPompu({ book?, prompt? }) — window event to summon Pompu from anywhere.
 │
 ├── api/
@@ -60,7 +61,8 @@ app/
 │   ├── cal/slots/route.ts      GET  — next open slots for 15/30 min, in the visitor's time zone.
 │   ├── cal/book/route.ts       POST — creates the booking on Cal.com (validated, rate-limited).
 │   ├── book/route.ts           GET  — plain redirect to the Cal.com page (no-JS fallback).
-│   └── contact/route.ts        POST — contact form via Resend.
+│   ├── contact/route.ts        POST — contact form via Resend.
+│   └── photo/route.ts          GET  — allow-listed, cached proxy for Google Photos CDN images.
 │
 ├── components/
 │   ├── Hero.tsx / HeroActions.tsx   Intro + stats + CTAs; hosts PompuShell.
@@ -71,7 +73,10 @@ app/
 │   ├── ResumePaper.tsx         Sticky one-page résumé; the chapter in view expands, others collapse to one line.
 │   ├── SelectedSystems.tsx     Platform loop (click to explore) + infra card; "ask pompu about this".
 │   ├── Projects.tsx            Renders `projects` from profile.ts; returns null when empty.
+│   ├── Photography.tsx         Server section: fetches the Google Photos album + renders the gallery shell.
+│   ├── PhotoGallery.tsx        Client gallery: editorial grid + keyboard lightbox.
 │   ├── ToolIcon.tsx            Mono brand mark for a tool name (react-icons/si); null when unknown.
+│   ├── Reveal.tsx              One-shot scroll reveal (IntersectionObserver) with reduced-motion fallback.
 │   ├── Notes.tsx               Substack RSS (server component, revalidates hourly).
 │   ├── Contact.tsx             Contact form + "book a call with Pompu".
 │   ├── CommandPalette.tsx / CarrotRain.tsx / ThemeToggle.tsx / SmoothScroll.tsx
@@ -91,7 +96,7 @@ npm run lint       # next lint, must be clean
 npx tsc --noEmit   # type-check, must be clean
 ```
 
-Build size budget: the `/` route is **25.6 kB** (First Load 131 kB) — the booking widget, scroll story, résumé paper, platform loop, and tool marks are client components. If a change pushes it by more than ~5 kB, justify it in the PR. (The +5.7 kB from 19.9 kB is the three project cards, eight Simple Icons marks, and the conversational chat bubbles; trimming `ToolIcon` to only rendered marks kept it under the soft cap.)
+Build size budget: the `/` route is **27.7 kB** (First Load 133 kB) — the booking widget, scroll story, résumé paper, platform loop, tool marks, and photo gallery are client components. If a change pushes it by more than ~5 kB, justify it in the PR. (The +7.8 kB from 19.9 kB covers the three project cards, eight Simple Icons marks, the conversational chat bubbles, the photography gallery, and the scroll-reveal wrapper.)
 
 ---
 
@@ -106,9 +111,10 @@ CAL_COM_API_KEY=...        # optional; Cal.com public endpoints work without it 
 RESEND_API_KEY=...         # contact form delivery
 CONTACT_TO_EMAIL=...       # where contact form messages go
 SUBSTACK_RSS_URL=...       # writing section feed
+GOOGLE_PHOTOS_ALBUM_URL=... # full https://photos.google.com/share/<id>?key=<key> URL; short photos.app.goo.gl links are a JS shell
 ```
 
-Lives in `.env` locally (gitignored). Set in Vercel for prod. Cal.com event slugs live in `bookingDurations` in `profile.ts` (currently `15min`, `30min`).
+Lives in `.env` locally (gitignored). Set in Vercel for prod. Cal.com event slugs live in `bookingDurations` in `profile.ts` (currently `15min`, `30min`). The photography album URL must be the resolved `photos.google.com/share/...` link, not the short `photos.app.goo.gl` share link.
 
 There is no `NEXT_PUBLIC_*` surface.
 
@@ -169,6 +175,8 @@ Existing keyframes live in `globals.css`. Reuse before inventing:
 - `fadeInUp` / `slideInLeft` / `statusPing` / `pulseGlow` — generic
 - `glitchShift` — RGB-shift glitch on `.glitch-on-hover` (dark mode only)
 - `themeWipeIn` — circular clip-path reveal driven by the View Transitions API on theme swap
+- `nodeSweep` — accent line sweep on the active platform node
+- `Reveal` (`components/Reveal.tsx`) — one-shot fade/lift when a section enters the viewport; automatically disabled for reduced-motion users
 - `.stagger-children > *` — staggered fade-in for lists
 
 The `html, body` selector has a `transition: background-color 0.45s, color 0.45s` so that browsers without View Transitions still get a smooth color cross-fade between themes.
@@ -225,6 +233,7 @@ Reply intent 'booking' or a "book" action → BookingWidget opens inside the cha
 
 - **New role, bullet, metric, skill:** edit `roles` / `skills` / `profile.stats` in `app/lib/profile.ts`. The timeline, résumé paper, and Pompu all update.
 - **Projects:** add entries to `projects` in `profile.ts`; the "Building" section appears automatically.
+- **Photography:** set `GOOGLE_PHOTOS_ALBUM_URL` to the full public Google Photos share URL. The server fetch parses the album page and revalidates hourly; the section shows an empty state if the album is missing or unreachable. The intro copy lives in `photography` in `profile.ts`.
 - **Platform loop:** edit `platform` in `profile.ts` (5 nodes fits the grid; change `grid-template-columns` in `.platform-loop` if you change the count).
 - **New section:** create `app/components/<Name>.tsx` with `<section id="…" className="px-5 sm:px-10 lg:px-16 py-20"><div className="max-w-6xl mx-auto">`, mount it in `page.tsx`, add a ⌘K item in `CommandPalette.tsx`, and a scroll action/topic in `context.ts`.
 
@@ -262,6 +271,7 @@ For a global side-effect (like `/carrot`), dispatch a `CustomEvent` and listen f
 - Carrot rain is `aria-hidden` and `pointer-events-none`.
 - Reduced-motion users get a static page — extend the `@media (prefers-reduced-motion: reduce)` block in `globals.css` whenever you add a new animation.
 - Color contrast: moss `#6B7F3E` on cream `#F5F0E8` is 4.6:1 (AA for normal text). Don't lighten the accent below `--accent-light` (`#8BA34E`) for body text.
+- The photography lightbox is a `role="dialog"` with `aria-modal`, arrow-key navigation, `Escape` to close, and focus returned to the tile that opened it.
 
 ---
 
@@ -272,6 +282,7 @@ For a global side-effect (like `/carrot`), dispatch a `CustomEvent` and listen f
 - **Gemini is told to rephrase, not invent.** For a matched topic it only gets that one fact; actions/intent always come from the grounded topic, never the model.
 - **Lenis smooth scroll** intercepts programmatic `window.scrollTo`; use `scrollIntoView` on elements, which Lenis handles.
 - **`profile.links.resume` points at the hosted Google Drive PDF**, not `public/resume.pdf`. The site renders the résumé from `profile.ts`; update the Drive link there when the PDF changes. Keep the local file only as a fallback.
+- **Google Photos share links must be the resolved `photos.google.com/share/<id>?key=<key>` URL.** The short `photos.app.goo.gl/...` link is a JS-only shell and returns no photo rows to the server. `lib/photography.ts` parses `lh3.googleusercontent.com/pw/...",W,H,` rows and revalidates hourly. The grid requests sized CDN URLs through `/api/photo` (allow-listed, cached) because Google's CDN is flaky under concurrent sized requests; the lightbox uses a 1600px rendition.
 - **Don't run `next build` while `next dev` is running** — both write `.next/`, and the dev server ends up serving an unstyled page.
 - **Gemini latency is spiky** (1–7s, occasional 503). The chat route aborts at 4.5s and serves the grounded reply.
 

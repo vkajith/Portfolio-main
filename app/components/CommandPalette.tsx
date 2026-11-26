@@ -11,6 +11,7 @@ import {
   Linkedin,
   Mail,
   Coffee,
+  Camera,
   Rabbit,
   Workflow,
 } from 'lucide-react'
@@ -46,6 +47,7 @@ export default function CommandPalette() {
       { id: 'experience', label: 'The story', hint: 'timeline + live résumé', icon: Briefcase, run: () => scrollToId('experience') },
       { id: 'systems', label: 'The platform', hint: 'builder · gateway · evals · analytics', icon: Workflow, run: () => scrollToId('systems') },
       { id: 'notes', label: 'Writing', hint: 'Substack', icon: BookOpen, run: () => scrollToId('notes') },
+      { id: 'photography', label: 'Photography', hint: 'frames + Google Photos', icon: Camera, run: () => scrollToId('photography') },
       { id: 'contact', label: 'Send a message', hint: 'contact form', icon: Mail, run: () => scrollToId('contact') },
       { id: 'resume', label: 'Open résumé PDF', hint: 'new tab', icon: FileText, run: () => window.open(profile.links.resume, '_blank') },
       { id: 'coffee', label: 'Buy me a coffee', hint: 'support the work', icon: Coffee, run: () => window.open(profile.links.coffee, '_blank') },

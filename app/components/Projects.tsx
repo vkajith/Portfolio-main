@@ -1,6 +1,7 @@
 import { ArrowUpRight } from 'lucide-react'
 import { projects } from '@/app/lib/profile'
 import ToolIcon from './ToolIcon'
+import Reveal from './Reveal'
 
 // Data-driven from profile.ts. Renders nothing until there are entries.
 export default function Projects() {
@@ -9,8 +10,11 @@ export default function Projects() {
   return (
     <section id="projects" className="px-5 sm:px-10 lg:px-16 py-20">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-[11px] font-mono uppercase tracking-[0.2em] text-[var(--text-muted)] mb-8">Building</h2>
-        <div className="grid sm:grid-cols-2 gap-4">
+        <Reveal>
+          <h2 className="text-[11px] font-mono uppercase tracking-[0.2em] text-[var(--text-muted)] mb-8">Building</h2>
+        </Reveal>
+        <Reveal delay={60}>
+          <div className="grid sm:grid-cols-2 gap-4">
           {projects.map((p) => {
             const Card = p.link ? 'a' : 'div'
             return (
@@ -42,7 +46,8 @@ export default function Projects() {
               </Card>
             )
           })}
-        </div>
+          </div>
+        </Reveal>
       </div>
     </section>
   )

@@ -942,17 +942,6 @@ button:focus-visible {
 .platform-node-step { font-family: var(--font-jetbrains), monospace; font-size: 10px; color: var(--text-muted); }
 .platform-node-name { font-size: 13.5px; font-weight: 600; color: var(--text-primary); }
 .platform-node-short { font-size: 11.5px; color: var(--text-muted); }
-.platform-node-timer {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  height: 2px;
-  width: 100%;
-  background: var(--accent);
-  transform-origin: left;
-  animation: nodeTimer 4.2s linear forwards;
-}
-@keyframes nodeTimer { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 .platform-return {
   position: absolute;
   left: 10%;
@@ -978,7 +967,6 @@ button:focus-visible {
   .pompu-dock,
   .pompu-pill,
   .pompu-pill--nudge,
-  .platform-node-timer,
   .platform-node.is-active::before { animation: none !important; }
   .timeline-rail--fill, .timeline-step, .resume-entry, .resume-expand, .platform-node { transition: none !important; }
 }

@@ -97,7 +97,7 @@ export default function PhotoGallery({ photos, albumUrl }: { photos: Photo[]; al
           ))}
         </div>
         <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
-          Tap a frame to open · {photos.length} in this set
+          Tap a frame to open
         </p>
       </div>
 
@@ -115,7 +115,7 @@ export default function PhotoGallery({ photos, albumUrl }: { photos: Photo[]; al
             onClick={(event) => event.stopPropagation()}
           >
             <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/55">
-              Photography · {String((active ?? 0) + 1).padStart(2, '0')} / {String(photos.length).padStart(2, '0')}
+              Photography · Frame {String((active ?? 0) + 1).padStart(2, '0')}
             </span>
             <button
               ref={closeRef}

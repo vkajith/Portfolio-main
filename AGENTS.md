@@ -77,7 +77,7 @@ app/
 │   ├── PhotoGallery.tsx        Client gallery: editorial grid + keyboard lightbox.
 │   ├── ToolIcon.tsx            Mono brand mark for a tool name (react-icons/si); null when unknown.
 │   ├── Reveal.tsx              One-shot scroll reveal (IntersectionObserver) with reduced-motion fallback.
-│   ├── Notes.tsx               Substack RSS (server component, revalidates hourly).
+│   ├── Notes.tsx               Substack RSS (server component, revalidates hourly; cover images from enclosures).
 │   ├── Contact.tsx             Contact form + "book a call with Pompu".
 │   ├── CommandPalette.tsx / CarrotRain.tsx / ThemeToggle.tsx / SmoothScroll.tsx
 ```
@@ -234,6 +234,7 @@ Reply intent 'booking' or a "book" action → BookingWidget opens inside the cha
 - **New role, bullet, metric, skill:** edit `roles` / `skills` / `profile.stats` in `app/lib/profile.ts`. The timeline, résumé paper, and Pompu all update.
 - **Projects:** add entries to `projects` in `profile.ts`; the "Building" section appears automatically.
 - **Photography:** set `GOOGLE_PHOTOS_ALBUM_URL` to the full public Google Photos share URL. The server fetch parses the album page and revalidates hourly; the section shows an empty state if the album is missing or unreachable. The intro copy lives in `photography` in `profile.ts`.
+- **Writing:** `Notes.tsx` reads `SUBSTACK_RSS_URL`, takes the latest 3 items, and pulls each post's cover image from the RSS `<enclosure>`/`<media:*>` tag (falling back to the first `<img>` in the item). Revalidates hourly.
 - **Platform loop:** edit `platform` in `profile.ts` (5 nodes fits the grid; change `grid-template-columns` in `.platform-loop` if you change the count).
 - **New section:** create `app/components/<Name>.tsx` with `<section id="…" className="px-5 sm:px-10 lg:px-16 py-20"><div className="max-w-6xl mx-auto">`, mount it in `page.tsx`, add a ⌘K item in `CommandPalette.tsx`, and a scroll action/topic in `context.ts`.
 

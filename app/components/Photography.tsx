@@ -5,12 +5,8 @@ import PhotoGallery from './PhotoGallery'
 import Reveal from './Reveal'
 
 export default async function Photography() {
-  const [photos, albumUrl] = await Promise.all([
-    getPhotography(),
-    Promise.resolve(process.env.GOOGLE_PHOTOS_ALBUM_URL?.trim() ?? ''),
-  ])
-
-  const frameLabel = photos.length === 1 ? '1 frame' : `${photos.length} frames`
+  const photos = await getPhotography()
+  const albumUrl = process.env.GOOGLE_PHOTOS_ALBUM_URL?.trim() ?? ''
 
   return (
     <section id="photography" className="px-5 sm:px-10 lg:px-16 py-20 lg:py-28">
@@ -22,9 +18,6 @@ export default async function Photography() {
                 <h2 className="text-[11px] font-mono uppercase tracking-[0.2em] text-[var(--text-muted)]">
                   {photography.label}
                 </h2>
-                {photos.length > 0 && (
-                  <span className="text-[10px] font-mono text-[var(--text-muted)]">· {frameLabel}</span>
-                )}
               </div>
 
               <div aria-hidden className="h-px w-10 bg-[var(--accent-soft-35)] mb-5" />

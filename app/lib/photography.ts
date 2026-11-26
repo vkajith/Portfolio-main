@@ -78,15 +78,6 @@ export function photoSrc(photo: Photo, width: number): string {
   return `${photo.base}=w${width}-h${height}`
 }
 
-export function photoSrcSet(photo: Photo): string {
-  return [480, 800, 1200, 1600]
-    .map((width) => {
-      const height = Math.max(1, Math.round((width * photo.height) / photo.width))
-      return `${photo.base}=w${width}-h${height} ${width}w`
-    })
-    .join(', ')
-}
-
 // Google's CDN is flaky under the gallery's concurrent sized requests, so the
 // browser requests these through the cached /api/photo proxy instead.
 export function proxiedPhotoSrc(photo: Photo, width: number): string {

@@ -7,7 +7,14 @@ Keep this file up to date when you change the active file graph, conventions, or
 
 ## 1. What this is
 
-Personal portfolio for **Vysyakh Ajith**. A single-page Next.js 15 app with a sticky left sidebar (identity + a chat terminal) and a scrollable right column (experience + projects). The terminal hosts **Pompu**, a quirky rabbit assistant that answers questions about Vysyakh — backed by Google Gemini in production and a hand-written keyword fallback when the API key is absent.
+Personal portfolio for **Vysyakh Ajith**, positioned as an **AI Agent Platform Engineer** (LLM gateways, agent orchestration, evals, analytics at scale). A single-page Next.js 15 app that reads top to bottom as a story:
+
+1. **Hero** — positioning, stats, CTAs, and **Pompu** (a quirky rabbit concierge chat) as the centrepiece.
+2. **The story** — a scroll-driven timeline (oldest → newest) beside a sticky **résumé paper** that "writes" each entry as its chapter scrolls into view.
+3. **The platform** — an explorable loop: Agent Builder → LLM Gateway → Agentic Analytics → LLM-as-Judge → Agent Harness.
+4. **Building** (projects; hidden while empty) → **Writing** (Substack) → **Contact**.
+
+Once the hero scrolls away, Pompu docks into a bottom-right pill/panel and follows the visitor. Pompu answers from verified facts and **books real 15/30-minute calls on Vysyakh's Cal.com calendar inside the chat**.
 
 Design language: warm cream paper (`#F5F0E8`) with a moss-green accent in **light mode**; deep ink-purple (`#0a0612`) with hot magenta + electric cyan in **dark (neon-noir) mode**. One rabbit, occasional carrot.
 
@@ -36,32 +43,40 @@ Everything reachable from `app/page.tsx` and `app/layout.tsx`. If a file isn't l
 
 ```
 app/
-├── layout.tsx                  Root layout. Inter + JetBrains Mono. Wraps children in <SmoothScroll>.
-├── page.tsx                    The only route. Mounts LeftPanel + Experience + Projects + global overlays.
-├── globals.css                 CSS variables (palette), animations, .pompu-*, .section-divider, etc.
-├── icon.svg                    Carrot favicon (Next.js auto-serves at /icon.svg).
-├── apple-icon.svg              180×180 carrot for iOS.
-│
-├── api/
-│   └── chat/route.ts           POST /api/chat — Pompu's brain. Calls Gemini or falls back.
+├── layout.tsx                  Root layout, fonts, metadata/OG, JSON-LD, pre-hydration theme script.
+├── page.tsx                    The only route: Hero → CareerStory → SelectedSystems → Projects → Notes → Contact.
+├── globals.css                 Palette tokens (incl. --paper-*), animations, dock/timeline/résumé/platform styles.
+├── icon.svg / apple-icon.svg   Carrot favicons.
+├── opengraph-image.tsx         Generated OG card. robots.ts / sitemap.ts for SEO.
 │
 ├── lib/
-│   └── context.ts              VYSYAKH_CONTEXT system prompt + FALLBACK_RESPONSES table + getFallbackResponse().
+│   ├── profile.ts              ★ SINGLE SOURCE OF TRUTH: identity, roles, highlights, platform, skills, projects.
+│   ├── context.ts              Pompu's prompt + grounded fallback topics, GENERATED from profile.ts.
+│   ├── cal.ts                  Server-only Cal.com v2 helpers (config from CAL_COM_BOOKING_URL, rate limit).
+│   └── pompuEvents.ts          openPompu({ book?, prompt? }) — window event to summon Pompu from anywhere.
+│
+├── api/
+│   ├── chat/route.ts           POST — Pompu's brain (Gemini, grounded on context.ts; deterministic fallback).
+│   ├── cal/slots/route.ts      GET  — next open slots for 15/30 min, in the visitor's time zone.
+│   ├── cal/book/route.ts       POST — creates the booking on Cal.com (validated, rate-limited).
+│   ├── book/route.ts           GET  — plain redirect to the Cal.com page (no-JS fallback).
+│   └── contact/route.ts        POST — contact form via Resend.
 │
 ├── components/
-│   ├── SmoothScroll.tsx        Lenis wrapper.
-│   ├── LeftPanel.tsx           Sticky sidebar. Identity → bio → Terminal (docked bottom) → socials/resume.
-│   ├── Terminal.tsx            Pompu UI: rabbit avatar, mood, slash commands, ↑/↓ history, custom block cursor.
-│   ├── Experience.tsx          Right-column section. Static array of 3 jobs.
-│   ├── Projects.tsx            Right-column section. Static array of 3 projects.
-│   ├── CommandPalette.tsx      ⌘K / Ctrl+K palette (rendered globally).
-│   ├── CarrotRain.tsx          Konami code listener + 'pompu:carrot-rain' event handler. Renders falling 🥕.
-│   └── ThemeToggle.tsx         Fixed top-right sun/moon button. View Transitions API circular wipe.
-│
-└── img/                        PNG/JPG assets used by Experience and Projects only.
+│   ├── Hero.tsx / HeroActions.tsx   Intro + stats + CTAs; hosts PompuShell.
+│   ├── PompuShell.tsx          Single Terminal instance: in-flow in the hero, fixed dock/pill once scrolled past.
+│   ├── Terminal.tsx            Pompu chat UI: slash commands, history, action buttons, in-chat booking.
+│   ├── BookingWidget.tsx       Duration → day → time → name/email → confirm, all inside the chat.
+│   ├── CareerStory.tsx         Scroll timeline; IntersectionObserver picks the active chapter.
+│   ├── ResumePaper.tsx         Sticky one-page résumé; the chapter in view expands, others collapse to one line.
+│   ├── SelectedSystems.tsx     Platform loop (click to explore) + infra card; "ask pompu about this".
+│   ├── Projects.tsx            Renders `projects` from profile.ts; returns null when empty.
+│   ├── Notes.tsx               Substack RSS (server component, revalidates hourly).
+│   ├── Contact.tsx             Contact form + "book a call with Pompu".
+│   ├── CommandPalette.tsx / CarrotRain.tsx / ThemeToggle.tsx / SmoothScroll.tsx
 ```
 
-`public/` holds `resume.pdf` only. Don't add Next.js boilerplate SVGs back.
+`public/` holds `resume.pdf` only.
 
 ---
 
@@ -75,21 +90,26 @@ npm run lint       # next lint, must be clean
 npx tsc --noEmit   # type-check, must be clean
 ```
 
-Build size budget: the `/` route is currently **17.1 kB** First Load JS shared = 122 kB. If a change pushes either by more than ~5 kB, justify it in the PR.
+Build size budget: the `/` route is **19.9 kB** (First Load 125 kB) — the booking widget, scroll story, résumé paper and platform loop are client components. If a change pushes it by more than ~5 kB, justify it in the PR.
 
 ---
 
 ## 5. Environment
 
-Single env var, optional:
+All optional — every feature degrades gracefully:
 
 ```
-GEMINI_API_KEY=...         # if missing, Pompu gracefully falls back to keyword matching
+GEMINI_API_KEY=...         # without it Pompu answers from the grounded topic table only
+CAL_COM_BOOKING_URL=...    # https://cal.com/<username>/<slug> — enables in-chat booking + /api/book redirect
+CAL_COM_API_KEY=...        # optional; Cal.com public endpoints work without it (higher limits with it)
+RESEND_API_KEY=...         # contact form delivery
+CONTACT_TO_EMAIL=...       # where contact form messages go
+SUBSTACK_RSS_URL=...       # writing section feed
 ```
 
-Lives in `.env` locally (gitignored). Set in Vercel for prod.
+Lives in `.env` locally (gitignored). Set in Vercel for prod. Cal.com event slugs live in `bookingDurations` in `profile.ts` (currently `15min`, `30min`).
 
-There is no `NEXT_PUBLIC_*` surface. Everything Pompu does happens server-side in `app/api/chat/route.ts`.
+There is no `NEXT_PUBLIC_*` surface.
 
 ---
 
@@ -177,73 +197,56 @@ Don't add another carrot without retiring or merging an existing one. Decoration
 
 ## 7. How Pompu works
 
+**Knowledge:** `profile.ts` → `context.ts` builds `VYSYAKH_CONTEXT` (the Gemini system prompt) and a scored keyword topic table. Edit `profile.ts`, never the prompt text by hand.
+
 ```
-User types in Terminal
-        │
-        ▼
-handleSubmit(query)
-        │
-        ├── lowercase match against SLASH_COMMANDS in Terminal.tsx → instant local reply (no network)
-        │   └── /carrot also dispatches CustomEvent('pompu:carrot-rain')
-        │
-        └── otherwise → POST /api/chat { message }
-                              │
-                              ▼
-                         api/chat/route.ts
-                              │
-                              ├── GEMINI_API_KEY present? → call Gemini with VYSYAKH_CONTEXT
-                              │                              └── on error → getFallbackResponse(message)
-                              │
-                              └── GEMINI_API_KEY missing? → getFallbackResponse(message)
+Visitor types in Terminal
+  ├── slash command (/help /about /book /clear …) → commandReply() locally, no network
+  └── POST /api/chat { message, history }
+         ├── topic matched → Gemini rephrases ONLY that grounded fact; actions come from the topic
+         ├── no match      → Gemini answers freely in character; booking/contact intent → adds "Book a time"
+         └── no key / error / timeout → the grounded reply as-is
+Reply intent 'booking' or a "book" action → BookingWidget opens inside the chat
+  → GET /api/cal/slots?minutes=&tz=  → visitor picks a time → POST /api/cal/book → confirmation + carrot rain
 ```
 
-`getFallbackResponse()` does direct-key match → `/key` match → substring match → fuzzy topic routing → final "outside my burrow" reply.
+**Summoning:** anything can call `openPompu({ book?, prompt? })` (`lib/pompuEvents.ts`). `PompuShell` expands the dock; `Terminal` focuses, starts booking, or sends the prompt. Used by the `/` hotkey, ⌘K, hero CTA, Contact, and the platform section's "ask pompu about this".
 
-History (↑/↓): kept in component state only — does not persist across reloads. (Adding `sessionStorage` persistence is a tracked nice-to-have.)
+**State:** the conversation persists in `sessionStorage` (`pompu-conversation-v2`). There is exactly one `Terminal` instance, so docking never loses the conversation or a half-finished booking.
 
 ---
 
-## 8. How to add a new section to the right column
+## 8. How to update content
 
-1. Create `app/components/<Name>.tsx` — copy the shape of `Experience.tsx`:
-   - `'use client'` only if you need it (most static sections don't)
-   - `<section id="<name>" className="mb-16">`
-   - `<h2 className="text-[11px] font-mono uppercase tracking-[0.2em] text-[var(--text-muted)] mb-8">`
-   - `card-hover` + `bg-[var(--bg-card)]` for cards
-   - `tag-interactive` for filled tag pills
-2. Import + mount in `app/page.tsx` between Experience and Projects (with a `<div className="section-divider my-12" />` between).
-3. Add an entry to the `CommandPalette` items array in `app/components/CommandPalette.tsx` so ⌘K can jump to it.
-4. Mention it in `VYSYAKH_CONTEXT` and `FALLBACK_RESPONSES` so Pompu can answer about it.
+- **New role, bullet, metric, skill:** edit `roles` / `skills` / `profile.stats` in `app/lib/profile.ts`. The timeline, résumé paper, and Pompu all update.
+- **Projects:** add entries to `projects` in `profile.ts`; the "Building" section appears automatically.
+- **Platform loop:** edit `platform` in `profile.ts` (5 nodes fits the grid; change `grid-template-columns` in `.platform-loop` if you change the count).
+- **New section:** create `app/components/<Name>.tsx` with `<section id="…" className="px-5 sm:px-10 lg:px-16 py-20"><div className="max-w-6xl mx-auto">`, mount it in `page.tsx`, add a ⌘K item in `CommandPalette.tsx`, and a scroll action/topic in `context.ts`.
 
 ---
 
 ## 9. How to add a new slash command
 
-In `app/components/Terminal.tsx`, extend `SLASH_COMMANDS`:
+1. In `app/components/Terminal.tsx`, map the command to a reply key: `'/yourcommand': 'yourcommand'` in `SLASH_COMMANDS`.
+2. In `app/lib/context.ts`, add `yourcommand` to `FALLBACK_RESPONSES` (text) and, if useful, `COMMAND_ACTIONS` (buttons).
+3. Mention it in the `help` reply if it's user-visible.
 
-```ts
-const SLASH_COMMANDS: Record<string, string> = {
-  ...,
-  '/yourcommand': FALLBACK_RESPONSES.yourcommand,
-}
-```
-
-Then add `yourcommand` to `FALLBACK_RESPONSES` in `app/lib/context.ts`. Also surface it in the `/help` reply if it's user-visible.
-
-If the command should trigger a global side-effect (like `/carrot` does), dispatch a `CustomEvent` and listen for it in the relevant global component (e.g. `CarrotRain.tsx`).
-
+For a global side-effect (like `/carrot`), dispatch a `CustomEvent` and listen for it in the relevant component (e.g. `CarrotRain.tsx`). `/book` both replies and opens the booking widget.
 ---
 
 ## 10. Layout invariants — do not break
 
-- **LeftPanel is sticky on `lg+`** with `lg:h-screen`. Total content (status + identity + bio + terminal + socials) must fit a 100vh viewport without scrolling at 1280×720. The terminal is `clamp(220px, 30vh, 300px)` for that reason.
-- **Terminal docks at the bottom** of LeftPanel via `mt-auto`. Don't put `flex-1` on its wrapper — that stretches it.
-- **`ThemeToggle`, `CommandPalette`, `CarrotRain` are mounted at the page root** (`app/page.tsx`), not inside LeftPanel. They listen on `window`, so they need a stable mount point.
-- **`/` global hotkey** is owned by `Terminal.tsx`. If a future input wants to claim `/`, coordinate.
-- **`⌘K` / `Ctrl+K`** is owned by `CommandPalette.tsx`. Same rule.
-- **Pompu input has no focus ring** — focus is signalled by the accent block cursor (`▎`, glows in dark). `.pompu-input:focus-visible { outline: none }` enforces this. Other inputs use the global `:focus-visible` accent ring.
-- **`<html>` has `suppressHydrationWarning`** because the inline pre-hydration script writes `data-theme` before React mounts. Don't remove that prop or you'll get hydration warnings.
-- **The pre-hydration script must remain in `<head>` of `layout.tsx`**, before any other content. If you move it to `<body>` you'll get a flash of wrong theme.
+- **`PompuShell` must have no transformed/filtered ancestor.** The dock is `position: fixed`; a `transform` on any ancestor (e.g. `.stagger-children`, which animates `transform`) would pin it to that ancestor instead of the viewport. That's why it sits beside, not inside, the hero's `.stagger-children` block.
+- **One Terminal instance.** Collapse the dock with `display: none` (`.is-closed`), never by unmounting.
+- **The dock always collapses to the pill on scroll-away** so it never covers the timeline/résumé; the conversation is kept.
+- **Never `disabled` the chat input.** A disabled input drops focus, so the visitor's next keystrokes hit the page (spaces scroll it). Block sending in `handleSubmit` instead.
+- **Nested scroll areas need `data-lenis-prevent`** (chat, booking slots, ⌘K list, résumé body) or Lenis swallows the wheel.
+- **Keep the story calm:** one change per scroll step (the active chapter expands on the paper and its dot fills). No skeletons, auto-scrolling, or auto-advancing carousels.
+- **CareerStory steps are `lg:min-h-[78vh]`**; the active step is decided by a thin band (`rootMargin: '-45% 0px -50% 0px'`). The sticky résumé is desktop-only; mobile shows full bullets in each step.
+- **The résumé must fit one viewport with the largest chapter (Observe.AI) expanded** at 1440×900; if you add bullets, check it still does.
+- **`/` hotkey** is owned by `Terminal.tsx`; **⌘K** by `CommandPalette.tsx`.
+- **Pompu input has no focus ring** — focus is the blinking `▎` cursor.
+- **`<html suppressHydrationWarning>`** + the pre-hydration theme script stay in `<head>`.
 
 ---
 
@@ -259,24 +262,25 @@ If the command should trigger a global side-effect (like `/carrot` does), dispat
 
 ## 12. Gotchas
 
-- **Terminal cursor positioning** is achieved with a layered invisible `<input>` (transparent text + transparent caret) on top of a styled `<div>` that re-renders the typed text and the `▎`. Both must share **exactly** the same font, size, and line-height — if you change `text-[12.5px]` or `leading-[18px]` on one, change both, or the cursor will drift off the last character.
-- **Gemini key absence is silent** — the user sees Pompu working, just with simpler answers. Don't add a warning UI; the keyword fallback is the contract.
-- **`sessionStorage` is not used yet.** All state is in-memory.
-- **Lenis smooth scroll** intercepts `scrollIntoView`. Behavior is fine in current code; if you add programmatic scrolling, test with smooth scroll on.
-- **Static images live in `app/img/`**, not `public/`. They're imported with `next/image`'s static-import path so Next.js can size them at build time. Keep new images there.
+- **Cal.com API versions are pinned per endpoint** (`cal-api-version`: `2024-09-04` for slots, `2024-08-13` for bookings). Bumping one without reading the changelog breaks the response shape.
+- **Slots are fetched in the visitor's time zone** (so day groupings match their calendar) and normalised to UTC ISO; the widget formats them back with `Intl`.
+- **Gemini is told to rephrase, not invent.** For a matched topic it only gets that one fact; actions/intent always come from the grounded topic, never the model.
+- **Lenis smooth scroll** intercepts programmatic `window.scrollTo`; use `scrollIntoView` on elements, which Lenis handles.
+- **`public/resume.pdf` must be kept in sync with `profile.ts` by hand** — the site renders the résumé from data, the PDF is the download.
+- **Don't run `next build` while `next dev` is running** — both write `.next/`, and the dev server ends up serving an unstyled page.
+- **Gemini latency is spiky** (1–7s, occasional 503). The chat route aborts at 4.5s and serves the grounded reply.
 
 ---
 
-## 13. What was deliberately removed (as of the last cleanup)
+## 13. What was deliberately removed
 
 So future agents don't re-add them in good faith:
 
-- The pre-facelift portfolio components (`Hero`, `Skills`, `Achievements`, `Testimonials`, `Marquee`, `Navbar`, `Footer`, `Contact`, `GitHubActivity`, `GitHubContributionMap`, `CustomCursor`)
-- `app/components/ui/` (shadcn-style folder, never wired up)
-- The old `providers/theme-provider.tsx` (a `next-themes`-style provider). The current theme system uses a simple `data-theme` attribute + inline bootstrap script + `ThemeToggle` component — no provider, no context.
-- `app/actions.ts` + `app/api/contact/route.ts` (the contact form was unmounted)
-- `public/{file,globe,next,vercel,window}.svg` (Next.js boilerplate)
-- Deps: `axios`, `framer-motion`, `nodemailer`, `react-fast-marquee`, `react-intersection-observer`, `react-tsparticles`, `tsparticles`
+- **Old projects** (HabitAct, WhatsApp Chat Render, SpotOn AI) and their screenshots — Vysyakh no longer wants them featured. Don't mention them anywhere, including Pompu.
+- `LeftPanel.tsx` (sticky sidebar layout) and `Experience.tsx` (card list) — replaced by `Hero` + `CareerStory`.
+- `ScrollProgress.tsx`, timeline company logos (`app/img/`), résumé skeleton lines / accumulating skills, and the platform auto-advance — removed as visual noise.
+- Pre-facelift components (`Skills`, `Achievements`, `Testimonials`, `Marquee`, `Navbar`, `Footer`, `GitHubActivity`, `GitHubContributionMap`, `CustomCursor`), `components/ui/`, `providers/theme-provider.tsx`.
+- Deps: `axios`, `framer-motion`, `nodemailer`, `react-fast-marquee`, `react-intersection-observer`, `react-tsparticles`, `tsparticles`.
 
 If you genuinely need any of these, restore from git rather than re-creating. Then update this file.
 

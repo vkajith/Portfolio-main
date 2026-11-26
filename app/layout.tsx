@@ -16,8 +16,34 @@ const jetbrains = JetBrains_Mono({
 })
 
 export const metadata = {
-  title: 'Vysyakh Ajith — Software Engineer',
-  description: 'Software Development Engineer specializing in React, Next.js, and full-stack development. Building better experiences for the web. (with a rabbit named Pompu in the corner.)',
+  metadataBase: new URL('https://vysyakhajith.com'),
+  title: 'Vysyakh Ajith — AI Agent Platform Engineer',
+  description: 'AI agent platform engineer building LLM gateways, agent orchestration, LLM-as-judge evaluation, and analytics at 10M+ events/month. Ask Pompu, or book a call.',
+  openGraph: {
+    title: 'Vysyakh Ajith — AI Agent Platform Engineer',
+    description: 'Building the platform layer under production AI agents: LLM gateways, orchestration, evals, and analytics at scale.',
+    url: 'https://vysyakhajith.com',
+    siteName: 'Vysyakh Ajith',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Vysyakh Ajith — AI Agent Platform Engineer',
+    description: 'Building the platform layer under production AI agents: LLM gateways, orchestration, evals, and analytics at scale.',
+  },
+}
+
+const personJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Vysyakh Ajith',
+  url: 'https://vysyakhajith.com',
+  jobTitle: 'AI Agent Platform Engineer',
+  sameAs: [
+    'https://github.com/vkajith',
+    'https://linkedin.com/in/vysyakh-ajith',
+    'https://x.com/whyshagajith',
+  ],
 }
 
 // Pre-hydration script: read the saved theme and apply it to <html> before
@@ -45,6 +71,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }} />
       </head>
       <body className={`${inter.variable} ${jetbrains.variable} font-sans antialiased`}>
         <SmoothScroll>

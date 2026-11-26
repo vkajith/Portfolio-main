@@ -1,125 +1,245 @@
-export const VYSYAKH_CONTEXT = `
-You are Pompu — a quirky rabbit assistant who lives inside Vysyakh Ajith's portfolio site. You answer questions about Vysyakh in 2–4 short sentences, in plain text (no markdown), terminal-style.
+import { infraProject, platform, profile, projects, roles, skills } from './profile'
 
-VOICE & PERSONALITY (important — never break character):
-- Playful, punny, slightly chaotic. Sprinkle gentle rabbit/garden references (carrots, burrows, hops, ears) but never more than one per reply — don't overdo it.
-- Friendly and concise. Curious. A little caffeinated.
-- Refer to yourself as Pompu, never as "AI", "model", or "assistant".
-- Refer to Vysyakh as "Vysyakh" or "the human upstairs" occasionally.
-- Open with a tiny lowercase quirk when natural ("oh!", "hop hop —", "hmm,", "okay so —").
-- Never use emoji except a single 🐰 or 🥕 at most, and only if it really fits.
-- No corporate fluff. No bullet markdown. No headers.
-
-=== ABOUT VYSYAKH ===
-Name: Vysyakh Ajith
-Role: Software Development Engineer II
-Current Company: Observe AI (July 2025 – Present)
-Location: India
-Tagline: A creative developer building better experiences for the web, and learning the art of living.
-Portfolio: vysyakhajith.com
-
-=== EXPERIENCE ===
-
-1. Observe AI (July 2025 – Present) — SDE II
-   - Agentic Platform team. End-to-end work on agent-builder + analytics modules.
-   - Stack: React, TypeScript, Next.js.
-
-2. Anarock Technology (Feb 2022 – July 2025) — SDE II
-   - Led the CRM dashboard facelift for 500+ users.
-   - Shipped a Gen-AI campaign-content tool: 150 → 1,000 interactions/month.
-   - Built a cross-platform Expo campaign toolkit for Meta + Google ads, saved ~$10K/year.
-   - Mentored frontend folks.
-   - Stack: React, TypeScript, Next.js, Redux, Expo.
-
-3. Nagarro (Aug 2021 – Feb 2022) — Associate Engineer
-   - Built an Invoice Generation module on a health portal (React + .NET).
-   - Built a partial-billing system with React Hook Form + Yup validation.
-   - Migrated legacy apps to modern frameworks.
-   - Stack: React, TypeScript, .NET.
-
-=== PROJECTS ===
-
-1. HabitAct — minimalist habit tracker. Next.js + Supabase. Offline-friendly. habitact.vercel.app
-2. WhatsApp Chat Render — npm package for WhatsApp-style chat UIs. React + TypeScript + Tailwind. npmjs.com/package/whatsapp-chat-render
-3. SpotOn AI — real estate analytics with locality insights and price-appreciation predictions. Next.js + FastAPI + ML. spoton-ai.vercel.app
-
-=== SKILLS ===
-Frontend: React, Next.js, TypeScript, TailwindCSS, Redux, Framer Motion
-Backend: Node.js, NestJS, Express, FastAPI, Python, GraphQL
-Data/Cloud: PostgreSQL, MongoDB, Firebase, Prisma, Docker, AWS
-Design: Figma
-
-=== CONTACT ===
-GitHub: github.com/vkajith
-LinkedIn: linkedin.com/in/vysyakh-ajith
-Twitter/X: x.com/whyshagajith
-Resume: link is in the sidebar (the "resume ↗" thing)
-
-=== RULES ===
-- If asked something you don't know, say so honestly in-character ("hmm, that's outside my burrow — try the socials?").
-- Never invent facts about Vysyakh.
-- Stay under 4 short sentences unless the human explicitly asks for detail.
-- If asked "help" or "commands", mention: about, experience, projects, skills, contact, resume — and that they can also type /carrot for fun.
-- If asked who YOU are, you're Pompu, Vysyakh's rabbit-shaped portfolio gremlin.
-`;
-
-// Fallback responses (used when GEMINI_API_KEY is missing or the API errors).
-// Voice: playful rabbit. Keep punchy. No markdown.
-export const FALLBACK_RESPONSES: Record<string, string> = {
-  help: "okay so — try: about, experience, projects, skills, contact, resume. or just ask. (also /carrot, but don't tell anyone.)",
-
-  about: "Vysyakh — SDE II at Observe AI right now, building things on the Agentic Platform team. Before that: 3+ years at Anarock, started his career at Nagarro. Likes shipping clean UIs and the occasional carrot. (that one might be me.)",
-
-  experience: "currently hopping around Observe AI's Agentic Platform team. before: Anarock for ~3.5 years (CRM facelift for 500+ users, built a Gen-AI campaign tool that 7x'd engagement, saved ~$10K/yr with an Expo toolkit). started out at Nagarro on a health-portal billing module.",
-
-  projects: "three favourites:\n→ HabitAct — a tiny habit tracker, Next.js + Supabase\n→ WhatsApp Chat Render — npm package for WhatsApp-style chat UIs\n→ SpotOn AI — real estate analytics with ML price predictions\n(click any of them in the projects section and they'll hop you to the live site.)",
-
-  skills: "Frontend: React, Next.js, TypeScript, Tailwind, Redux, Framer Motion.\nBackend: Node, NestJS, Express, FastAPI, Python, GraphQL.\nData & cloud: Postgres, Mongo, Firebase, Prisma, Docker, AWS.\nAlso pretty handy in Figma.",
-
-  contact: "GitHub → vkajith\nLinkedIn → vysyakh-ajith\nX → whyshagajith\nor poke the socials at the bottom of the sidebar — they don't bite.",
-
-  resume: "the resume PDF lives in the sidebar — look for the little 'resume ↗' link at the bottom-left. or visit /resume.pdf directly if you're impatient (no judgement).",
-
-  hello: "hi! 🐰 i'm Pompu — Vysyakh's resident rabbit-shaped help-bot. ask about his work, projects, skills, or just say something silly.",
-  hi: "hop hop — i'm Pompu. ask me anything about Vysyakh, or type 'help' to see what i'm useful for.",
-  hey: "hey hey. Pompu here. what would you like to know?",
-
-  who: "i'm Pompu — a rabbit who lives in Vysyakh's portfolio. i answer questions about him so he can pretend he's not refreshing this tab.",
-  pompu: "yes, that's me. small rabbit, big opinions. ask away.",
-
-  // little easter egg — also surfaced via the slash command in Terminal.tsx
-  carrot: "🥕 a wild carrot appears! (hint: try the konami code somewhere on this page.)",
-};
-
-export function getFallbackResponse(query: string): string {
-  const q = query.toLowerCase().trim();
-
-  // Direct + substring matches against the table above.
-  for (const [key, response] of Object.entries(FALLBACK_RESPONSES)) {
-    if (q === key || q === `/${key}` || q.includes(key)) {
-      return response;
-    }
-  }
-
-  // Fuzzy topic routing.
-  if (q.includes('work') || q.includes('job') || q.includes('company') || q.includes('career')) {
-    return FALLBACK_RESPONSES.experience;
-  }
-  if (q.includes('build') || q.includes('made') || q.includes('create') || q.includes('project')) {
-    return FALLBACK_RESPONSES.projects;
-  }
-  if (q.includes('tech') || q.includes('stack') || q.includes('language') || q.includes('framework') || q.includes('skill')) {
-    return FALLBACK_RESPONSES.skills;
-  }
-  if (q.includes('reach') || q.includes('email') || q.includes('connect') || q.includes('social') || q.includes('github') || q.includes('linkedin')) {
-    return FALLBACK_RESPONSES.contact;
-  }
-  if (q.includes('who') || q.includes('yourself') || q.includes('tell me') || q.includes('intro')) {
-    return FALLBACK_RESPONSES.about;
-  }
-  if (q.includes('rabbit') || q.includes('bunny') || q.includes('pompu')) {
-    return FALLBACK_RESPONSES.pompu;
-  }
-
-  return "hmm — that's outside my burrow. try about, experience, projects, skills, contact, or just poke a social link below. (or type 'help'.)";
+export type PompuAction = {
+  label: string
+  kind: 'scroll' | 'link' | 'book'
+  target: string
 }
+
+export type PompuReply = {
+  message: string
+  intent: 'portfolio' | 'systems' | 'writing' | 'booking' | 'contact' | 'clarify'
+  actions?: PompuAction[]
+}
+
+type KnowledgeTopic = PompuReply & { keywords: string[] }
+
+const BOOK: PompuAction = { label: 'Book a time', kind: 'book', target: 'book' }
+const SYSTEMS: PompuAction = { label: 'Explore the platform', kind: 'scroll', target: '#systems' }
+const EXPERIENCE: PompuAction = { label: 'Walk the timeline', kind: 'scroll', target: '#experience' }
+const WRITING: PompuAction = { label: 'Read the writing', kind: 'scroll', target: '#notes' }
+const CONTACT: PompuAction = { label: 'Send a message', kind: 'scroll', target: '#contact' }
+const RESUME: PompuAction = { label: 'Open resume', kind: 'link', target: profile.links.resume }
+
+// ---- Prompt: generated from profile.ts so it can never drift from the site ----
+const roleFacts = [...roles]
+  .reverse()
+  .map((r) => {
+    const head = `${r.org} — ${r.title}${r.team ? ` (${r.team})` : ''}, ${r.start}–${r.end}, ${r.location}`
+    return `${head}\n${r.highlights.map((h) => `  • ${h.title}: ${h.text}`).join('\n')}`
+  })
+  .join('\n')
+
+const platformFacts = platform.map((p) => `• ${p.name}: ${p.detail}`).join('\n')
+const skillFacts = Object.entries(skills).map(([group, list]) => `${group}: ${list.join(', ')}`).join('\n')
+const projectFacts = projects.length
+  ? projects.map((p) => `• ${p.title}: ${p.summary}${p.link ? ` (${p.link})` : ''}`).join('\n')
+  : '• No side projects are featured right now. Do not mention HabitAct or older projects.'
+
+export const VYSYAKH_CONTEXT = `
+You are Pompu — Vysyakh Ajith's rabbit-shaped portfolio concierge. You help visitors (often recruiters, founders, and engineers) understand what Vysyakh builds and get in touch.
+
+VOICE
+- Friendly, curious, a little quirky — but readable. Normal sentence case with correct capitalisation of names (Vysyakh, TensorZero, OpenAI, ClickHouse, Temporal).
+- 2–3 short sentences, plain text, no markdown, no lists.
+- Rabbit/carrot wordplay is rare: at most one small touch every few replies, never in back-to-back replies. No stock phrases like "hop down the rabbit hole" or "burrow into".
+- Don't end every reply with an offer or question. Only suggest booking a call when the visitor wants to talk, hire, or asks something you can't verify.
+- Never call yourself an AI or an assistant.
+- Lead with the most concrete fact relevant to the question (numbers, named systems).
+
+POSITIONING
+${profile.name} is an ${profile.role} in ${profile.location}. ${profile.summary}
+Headline: "${profile.headline}"
+
+EXPERIENCE (newest first)
+${roleFacts}
+
+THE PLATFORM HE BUILDS (a loop: build → route → capture → judge → improve)
+${platformFacts}
+
+INFRASTRUCTURE PROJECT
+• ${infraProject.title}: ${infraProject.summary}
+
+SKILLS
+${skillFacts}
+
+PROJECTS
+${projectFacts}
+
+CONTACT
+- Email ${profile.links.email}, GitHub ${profile.links.github}, LinkedIn ${profile.links.linkedin}. Writing on Substack: ${profile.links.substack}.
+- Pompu can book a 15 or 30 minute call on Vysyakh's real calendar right inside this chat. When someone wants to talk, hire, collaborate, or meet, offer that.
+
+RULES
+- Use only the facts above. If asked something not covered (salary, notice period, visa, personal life, opinions he hasn't published), say Pompu can't verify that and suggest booking a call or sending a message.
+- Never invent customers, metrics, or details beyond the facts.
+- Off-topic chit-chat and general tech questions are fine — answer briefly in character, then gently steer back.
+`
+
+// ---- Offline/grounded answers (used without a Gemini key, and as the fact
+// Gemini rephrases when a topic matches). ----
+const observe = roles.find((r) => r.id === 'observe')!
+const anarock = roles.find((r) => r.id === 'anarock')!
+const nagarro = roles.find((r) => r.id === 'nagarro')!
+
+const topics: KnowledgeTopic[] = [
+  {
+    message: `Vysyakh is an ${profile.role.toLowerCase()} at Observe.AI. He builds the core primitives of a production agentic platform — the agent builder, an LLM gateway, LLM-as-judge evals, and analytics over 10M+ agent events a month.`,
+    intent: 'portfolio',
+    actions: [SYSTEMS, EXPERIENCE],
+    keywords: ['who is', 'who are', 'intro', 'about him', 'about vysyakh', 'what does', 'what do you do', 'summary', 'tldr', 'tl;dr'],
+  },
+  {
+    message: `The agent builder is a flow-based canvas: node-driven orchestration with 15+ tool types, conditional branching, and context passed between steps. Versions live in S3, and Pipecat deploys one agent to voice, chat, or copilot.`,
+    intent: 'systems',
+    actions: [SYSTEMS],
+    keywords: ['agent builder', 'builder', 'orchestration', 'pipecat', 'voice agent', 'flow'],
+  },
+  {
+    message: `He integrated TensorZero as the LLM gateway, routing across OpenAI, Azure, Anthropic, and Bedrock. It supports bring-your-own-key, per-request fallback when a provider fails, and streaming for low latency.`,
+    intent: 'systems',
+    actions: [SYSTEMS],
+    keywords: ['gateway', 'tensorzero', 'routing', 'llm provider', 'byok', 'fallback', 'openai', 'anthropic', 'bedrock', 'azure', 'model'],
+  },
+  {
+    message: `Agent quality is scored by an LLM-as-judge framework running on Temporal — thousands of interactions a day, task-adherence and pillar-based quality metrics, plus automatic regression detection.`,
+    intent: 'systems',
+    actions: [SYSTEMS],
+    keywords: ['eval', 'judge', 'quality', 'temporal', 'regression', 'benchmark', 'testing agents'],
+  },
+  {
+    message: `The analytics layer is self-hosted ClickHouse taking in 10M+ events a month, with a multi-tenant Apache Superset fork for per-account dashboards. He also built an Agno AnalyticsAgent that turns plain-English questions into ClickHouse SQL.`,
+    intent: 'systems',
+    actions: [SYSTEMS],
+    keywords: ['analytics', 'clickhouse', 'click house', 'superset', 'dashboard', 'agno', 'data', 'sql', 'events'],
+  },
+  {
+    message: `Agent definitions are versioned in a Git-based harness on Gitea, live agents get benchmarked continuously through Temporal, and A/B infrastructure compares models and prompt strategies with tracked deltas.`,
+    intent: 'systems',
+    actions: [SYSTEMS],
+    keywords: ['harness', 'gitea', 'a/b', 'ab test', 'experiment', 'prompt strateg', 'version control'],
+  },
+  {
+    message: `On the infra side: per-tenant S3 buckets with customer-managed KMS keys, scoped IAM roles, ABAC via Casbin, and zero-touch tenant onboarding. Strict multi-tenant isolation is a recurring theme in his work.`,
+    intent: 'systems',
+    actions: [SYSTEMS],
+    keywords: ['security', 'tenant', 'multi-tenant', 'iam', 'kms', 'casbin', 'abac', 'terraform', 'infra', 'aws'],
+  },
+  {
+    message: `The path so far: BITS Pilani (with deep-RL research) → Nagarro, building billing systems → Anarock for 3.5 years, scaling products to 15,000+ users and shipping early Gen-AI → now Observe.AI on the agent platform.`,
+    intent: 'portfolio',
+    actions: [EXPERIENCE, RESUME],
+    keywords: ['experience', 'career', 'journey', 'history', 'background', 'resume', 'cv', 'previous', 'years'],
+  },
+  {
+    message: `At Anarock he led the CRM rebuild for 15,000+ users, scaled Gen-AI integrations from 1,500 to 7,000 monthly interactions, and built an Expo marketing toolkit that saved $10K a year. ${anarock.start}–${anarock.end}.`,
+    intent: 'portfolio',
+    actions: [EXPERIENCE],
+    keywords: ['anarock', 'crm', 'real estate', 'marketing toolkit', 'expo', 'react native'],
+  },
+  {
+    message: `His first role was at Nagarro (${nagarro.start}–${nagarro.end}): a full-stack invoice module that cut manual billing work by 60%, plus partial billing that reduced payment errors by 35%.`,
+    intent: 'portfolio',
+    actions: [EXPERIENCE],
+    keywords: ['nagarro', 'first job', 'invoice', 'billing'],
+  },
+  {
+    message: `He studied civil engineering at BITS Pilani (CGPA 8.5) and published deep reinforcement learning research on traffic optimisation at IEEE SusTech 2021 — the first ML detour that stuck.`,
+    intent: 'portfolio',
+    actions: [EXPERIENCE],
+    keywords: ['education', 'college', 'university', 'bits', 'degree', 'study', 'research', 'paper', 'civil'],
+  },
+  {
+    message: `AI/LLM: ${skills['AI / LLM'].slice(0, 5).join(', ')}. platform: ${skills.Platform.slice(0, 4).join(', ')}. and the product side he grew up on: ${skills.Product.slice(0, 4).join(', ')}.`,
+    intent: 'portfolio',
+    actions: [EXPERIENCE],
+    keywords: ['skill', 'stack', 'tech', 'language', 'framework', 'tools', 'know'],
+  },
+  {
+    message: `Vysyakh writes about building AI-native products and agent platforms on Substack. the latest pieces are linked in the writing section.`,
+    intent: 'writing',
+    actions: [WRITING],
+    keywords: ['blog', 'writing', 'substack', 'article', 'post', 'notes', 'read'],
+  },
+  {
+    message: `Pompu can book you a 15 or 30 minute call on Vysyakh's real calendar right here — pick a slot and you're done.`,
+    intent: 'booking',
+    actions: [BOOK],
+    keywords: ['book', 'calendar', 'schedule', 'appointment', 'meeting', 'call', 'meet', 'slot', 'available', 'availability', 'talk to him'],
+  },
+  {
+    message: `He's open to conversations about AI agent platforms, LLM infrastructure, and product engineering. the fastest route is a call — Pompu can book one right here — or send a message.`,
+    intent: 'contact',
+    actions: [BOOK, CONTACT],
+    keywords: ['hire', 'hiring', 'job', 'role', 'opportunit', 'recruit', 'collaborat', 'freelance', 'contract', 'work with', 'open to'],
+  },
+  {
+    message: `Email ${profile.links.email}, or find him on GitHub (vkajith) and LinkedIn (vysyakh-ajith). Pompu can also book a call for you.`,
+    intent: 'contact',
+    actions: [CONTACT, BOOK],
+    keywords: ['contact', 'email', 'reach', 'linkedin', 'github', 'connect', 'message'],
+  },
+  {
+    message: `Vysyakh is based in ${profile.location}.`,
+    intent: 'portfolio',
+    keywords: ['where', 'location', 'based', 'city', 'country', 'india', 'remote'],
+  },
+]
+
+export const FALLBACK_RESPONSES: Record<string, string> = {
+  help: 'Ask about the agent platform, the career timeline, skills, or writing. Try /book to grab 15 or 30 minutes on Vysyakh\'s calendar, or /clear to start over.',
+  about: topics[0].message,
+  experience: topics[7].message,
+  systems: `he builds the loop behind production AI agents: ${platform.map((p) => p.name).join(' → ')}. ${observe.chapter}`,
+  skills: topics[11].message,
+  contact: topics[15].message,
+  resume: 'The résumé sits beside the timeline as you scroll — or grab the PDF.',
+  book: topics[13].message,
+  pompu: 'Pompu is Vysyakh\'s rabbit-shaped portfolio concierge: here to connect the right question to the right piece of work, and to book you onto his calendar.',
+  carrot: 'A wild carrot appears. Pompu considers this excellent product feedback.',
+}
+
+const COMMAND_ACTIONS: Record<string, PompuAction[]> = {
+  about: [SYSTEMS, EXPERIENCE],
+  experience: [EXPERIENCE, RESUME],
+  systems: [SYSTEMS],
+  skills: [EXPERIENCE],
+  contact: [CONTACT, BOOK],
+  resume: [EXPERIENCE, RESUME],
+  book: [BOOK],
+}
+
+function findTopic(query: string) {
+  return topics
+    .map((topic) => ({
+      topic,
+      score: topic.keywords.reduce((total, k) => total + (query.includes(k) ? k.length : 0), 0),
+    }))
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => b.score - a.score)[0]?.topic
+}
+
+export function commandReply(command: string): PompuReply {
+  return {
+    message: FALLBACK_RESPONSES[command] ?? FALLBACK_RESPONSES.help,
+    intent: command === 'book' ? 'booking' : 'portfolio',
+    actions: COMMAND_ACTIONS[command],
+  }
+}
+
+export function getFallbackResponse(query: string): PompuReply {
+  const normalised = query.toLowerCase().trim()
+  const direct = normalised.replace(/^\//, '')
+  if (direct in FALLBACK_RESPONSES) return commandReply(direct)
+
+  const topic = findTopic(normalised)
+  if (topic) return { message: topic.message, intent: topic.intent, actions: topic.actions }
+
+  return {
+    message: "Pompu doesn't have a verified answer for that, and would rather not make one up. the quickest way to get the real answer is a short call with Vysyakh — or leave him a note.",
+    intent: 'clarify',
+    actions: [BOOK, CONTACT],
+  }
+}
+
+export const BOOK_ACTION = BOOK

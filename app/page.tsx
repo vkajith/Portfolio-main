@@ -1,43 +1,38 @@
-import LeftPanel from './components/LeftPanel'
-import Experience from './components/Experience'
+import Hero from './components/Hero'
+import CareerStory from './components/CareerStory'
+import SelectedSystems from './components/SelectedSystems'
 import Projects from './components/Projects'
+import Notes from './components/Notes'
+import Contact from './components/Contact'
 import CommandPalette from './components/CommandPalette'
 import CarrotRain from './components/CarrotRain'
 import ThemeToggle from './components/ThemeToggle'
 
+const Divider = () => (
+  <div className="px-5 sm:px-10 lg:px-16">
+    <div className="max-w-6xl mx-auto section-divider" />
+  </div>
+)
+
 export default function Home() {
   return (
-    <div className="noise-overlay flex flex-col lg:flex-row min-h-screen">
-      {/* Left: Sticky sidebar with Pompu docked at the bottom */}
-      <LeftPanel />
+    <div className="noise-overlay min-h-screen">
+      <Hero />
+      <CareerStory />
+      <Divider />
+      <SelectedSystems />
+      <Projects />
+      <Divider />
+      <Notes />
+      <Contact />
 
-      {/* Divider */}
-      <div
-        className="hidden lg:block w-px shrink-0"
-        style={{
-          background:
-            'linear-gradient(to bottom, transparent, var(--border-color) 15%, var(--border-color) 85%, transparent)',
-        }}
-      />
+      <footer className="px-5 pb-10 pt-6 text-center">
+        <p className="text-[11px] text-[var(--text-muted)] font-mono">
+          &copy; {new Date().getFullYear()} Vysyakh Ajith — built with help from Pompu <span aria-hidden>🐰🥕</span>
+        </p>
+      </footer>
 
-      {/* Right: Scrollable content */}
-      <main className="flex-1 p-6 sm:p-8 lg:p-10 xl:p-12">
-        <Experience />
-
-        {/* Section divider */}
-        <div className="section-divider my-12" />
-
-        <Projects />
-
-        {/* Footer */}
-        <div className="mt-16 pt-5 text-center" style={{ borderTop: '1px solid var(--border-color)' }}>
-          <p className="text-[11px] text-[var(--text-muted)] font-mono">
-            &copy; {new Date().getFullYear()} Vysyakh Ajith — built with help from Pompu <span aria-hidden>🐰🥕</span>
-          </p>
-        </div>
-      </main>
-
-      {/* Globals */}
+      {/* Globals (PompuShell lives in the Hero and docks itself) */}
       <ThemeToggle />
       <CommandPalette />
       <CarrotRain />

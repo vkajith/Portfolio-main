@@ -4,13 +4,16 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   Search,
   Briefcase,
-  FolderGit2,
   FileText,
+  CalendarDays,
+  BookOpen,
   Github,
   Linkedin,
   Mail,
   Rabbit,
+  Workflow,
 } from 'lucide-react'
+import { openPompu } from '@/app/lib/pompuEvents'
 
 type Item = {
   id: string
@@ -26,11 +29,7 @@ function scrollToId(id: string) {
   el.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
-function focusPompu() {
-  const input = document.querySelector<HTMLInputElement>('input[aria-label="Ask Pompu"]')
-  input?.focus()
-  input?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-}
+const focusPompu = () => openPompu()
 
 export default function CommandPalette() {
   const [open, setOpen] = useState(false)
@@ -40,13 +39,15 @@ export default function CommandPalette() {
 
   const items: Item[] = useMemo(
     () => [
-      { id: 'pompu', label: 'Talk to Pompu', hint: 'jump to the terminal', icon: Rabbit, run: focusPompu },
-      { id: 'experience', label: 'Experience', hint: 'where Vysyakh has worked', icon: Briefcase, run: () => scrollToId('experience') },
-      { id: 'projects', label: 'Projects', hint: 'things he has shipped', icon: FolderGit2, run: () => scrollToId('projects') },
-      { id: 'resume', label: 'Open resume', hint: 'opens the PDF', icon: FileText, run: () => window.open('/resume.pdf', '_blank') },
+      { id: 'pompu', label: 'Ask Pompu', hint: 'questions about the work', icon: Rabbit, run: focusPompu },
+      { id: 'book', label: 'Book a call', hint: '15 or 30 min, in-chat', icon: CalendarDays, run: () => openPompu({ book: true }) },
+      { id: 'experience', label: 'The story', hint: 'timeline + live résumé', icon: Briefcase, run: () => scrollToId('experience') },
+      { id: 'systems', label: 'The platform', hint: 'builder · gateway · evals · analytics', icon: Workflow, run: () => scrollToId('systems') },
+      { id: 'notes', label: 'Writing', hint: 'Substack', icon: BookOpen, run: () => scrollToId('notes') },
+      { id: 'contact', label: 'Send a message', hint: 'contact form', icon: Mail, run: () => scrollToId('contact') },
+      { id: 'resume', label: 'Open résumé PDF', hint: 'new tab', icon: FileText, run: () => window.open('/resume.pdf', '_blank') },
       { id: 'github', label: 'GitHub', hint: 'github.com/vkajith', icon: Github, run: () => window.open('https://github.com/vkajith', '_blank') },
       { id: 'linkedin', label: 'LinkedIn', hint: 'vysyakh-ajith', icon: Linkedin, run: () => window.open('https://linkedin.com/in/vysyakh-ajith', '_blank') },
-      { id: 'email', label: 'Send an email', hint: 'vysyakhajith@gmail.com', icon: Mail, run: () => (window.location.href = 'mailto:vysyakhajith@gmail.com') },
     ],
     []
   )
@@ -137,7 +138,7 @@ export default function CommandPalette() {
                 runAt(active)
               }
             }}
-            placeholder="jump to… (try: projects, resume, pompu)"
+            placeholder="jump to… (try: book, platform, résumé)"
             className="flex-1 bg-transparent outline-none text-[14px] font-sans text-[var(--text-primary)] placeholder:text-[var(--text-muted)]"
           />
           <kbd className="text-[10px] font-mono px-1.5 py-0.5 rounded border border-[var(--border-color)] text-[var(--text-muted)]">
@@ -145,7 +146,7 @@ export default function CommandPalette() {
           </kbd>
         </div>
 
-        <ul className="max-h-[52vh] overflow-y-auto py-1.5">
+        <ul data-lenis-prevent className="max-h-[52vh] overflow-y-auto overscroll-contain py-1.5">
           {filtered.length === 0 && (
             <li className="px-4 py-6 text-center text-[13px] text-[var(--text-muted)] font-mono">
               nothing here. try a different word.

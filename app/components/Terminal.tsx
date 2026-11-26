@@ -1,172 +1,209 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
-import { Rabbit } from 'lucide-react'
-import { FALLBACK_RESPONSES } from '@/app/lib/context'
+import { ArrowUpRight, CalendarPlus, Minus, Rabbit } from 'lucide-react'
+import { commandReply, PompuAction, PompuReply } from '@/app/lib/context'
+import { openPompu, PompuOpenDetail } from '@/app/lib/pompuEvents'
+import BookingWidget from './BookingWidget'
 
-interface Message {
-  type: 'system' | 'user' | 'response' | 'error'
+type Message = {
+  type: 'system' | 'user' | 'response'
   content: string
+  actions?: PompuAction[]
 }
 
-const SUGGESTIONS = ['about', 'experience', 'projects', 'skills']
+type HistoryMessage = { role: 'user' | 'model'; content: string }
 
-// Slash commands handled instantly client-side (no API hop).
+const SESSION_KEY = 'pompu-conversation-v2'
+const SUGGESTIONS = ['What does he build?', 'How do the evals work?', 'Is he open to roles?']
+
 const SLASH_COMMANDS: Record<string, string> = {
-  '/help': FALLBACK_RESPONSES.help,
-  '/about': FALLBACK_RESPONSES.about,
-  '/experience': FALLBACK_RESPONSES.experience,
-  '/projects': FALLBACK_RESPONSES.projects,
-  '/skills': FALLBACK_RESPONSES.skills,
-  '/contact': FALLBACK_RESPONSES.contact,
-  '/resume': FALLBACK_RESPONSES.resume,
-  '/pompu': FALLBACK_RESPONSES.pompu,
-  '/carrot': FALLBACK_RESPONSES.carrot,
-  '/clear': '__CLEAR__',
+  '/help': 'help',
+  '/about': 'about',
+  '/experience': 'experience',
+  '/systems': 'systems',
+  '/skills': 'skills',
+  '/contact': 'contact',
+  '/resume': 'resume',
+  '/book': 'book',
+  '/pompu': 'pompu',
+  '/carrot': 'carrot',
 }
 
 function moodForHour(h: number): { label: string; greeting: string } {
-  if (h < 6)  return { label: 'sleepy',    greeting: 'shh — Pompu is half-asleep, but still here. ask away ↓' }
-  if (h < 12) return { label: 'energetic', greeting: 'morning! Pompu has had three carrots. ready when you are ↓' }
-  if (h < 17) return { label: 'curious',   greeting: 'hi! Pompu is poking around. ask anything ↓' }
-  if (h < 21) return { label: 'chatty',    greeting: 'evenings hit different. Pompu is in the mood to chat ↓' }
-  return        { label: 'cozy',      greeting: 'late one, huh? Pompu put the kettle on. ask away ↓' }
+  if (h < 6) return { label: 'sleepy', greeting: "Pompu is half-asleep, but knows Vysyakh's work inside out. Ask away." }
+  if (h < 12) return { label: 'energetic', greeting: "Morning! Ask Pompu anything about Vysyakh's work — or book a call." }
+  if (h < 17) return { label: 'curious', greeting: "Hi! Ask Pompu about Vysyakh's agent platform work — or book a call." }
+  if (h < 21) return { label: 'chatty', greeting: "Evening! Ask Pompu about Vysyakh's agent platform work — or grab time on his calendar." }
+  return { label: 'cozy', greeting: 'Late one? Ask about the work, or book a call for tomorrow.' }
 }
 
-export default function Terminal() {
-  const mood = useMemo(() => moodForHour(new Date().getHours()), [])
+const INTERACTIVE = 'input, textarea, button, a, select, form, .booking-widget'
 
-  const [messages, setMessages] = useState<Message[]>([
-    { type: 'system', content: mood.greeting },
-  ])
+export default function Terminal({
+  variant = 'hero',
+  onMinimize,
+}: {
+  variant?: 'hero' | 'dock'
+  onMinimize?: () => void
+}) {
+  const mood = useMemo(() => moodForHour(new Date().getHours()), [])
+  const [messages, setMessages] = useState<Message[]>([{ type: 'system', content: mood.greeting }])
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
-  const [displayedResponse, setDisplayedResponse] = useState('')
-  const [isAnimating, setIsAnimating] = useState(false)
-
-  // ↑/↓ command history
+  const [booking, setBooking] = useState(false)
   const [history, setHistory] = useState<string[]>([])
   const [historyIdx, setHistoryIdx] = useState<number | null>(null)
-
+  const [isFocused, setIsFocused] = useState(false)
+  const [hydrated, setHydrated] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const submitRef = useRef<(q: string) => void>(() => {})
 
-  const scrollToBottom = useCallback(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem(SESSION_KEY)
+      if (saved) {
+        const restored = JSON.parse(saved) as Message[]
+        if (Array.isArray(restored) && restored.length) setMessages(restored)
+      }
+    } catch {
+      // A fresh conversation is a safe fallback.
+    } finally {
+      setHydrated(true)
     }
   }, [])
 
   useEffect(() => {
-    scrollToBottom()
-  }, [messages, displayedResponse, scrollToBottom])
+    if (!hydrated) return
+    try {
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(messages.slice(-20)))
+    } catch {}
+  }, [hydrated, messages])
 
-  useEffect(() => {
-    inputRef.current?.focus()
+  const scrollToBottom = useCallback(() => {
+    requestAnimationFrame(() => {
+      if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+    })
+  }, [])
+  useEffect(() => scrollToBottom(), [messages, isTyping, booking, scrollToBottom])
+
+  const focusInput = useCallback(() => {
+    setTimeout(() => inputRef.current?.focus({ preventScroll: true }), 60)
   }, [])
 
-  // Global `/` keybinding — focuses Pompu from anywhere on the page.
+  // Autofocus on desktop only — on mobile it pops the keyboard unasked.
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key !== '/') return
-      const t = e.target as HTMLElement | null
-      const tag = t?.tagName
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || t?.isContentEditable) return
-      e.preventDefault()
-      inputRef.current?.focus()
-      inputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    if (window.matchMedia('(pointer: fine)').matches) inputRef.current?.focus({ preventScroll: true })
+  }, [])
+
+  // '/' anywhere → open + focus Pompu.
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== '/' || event.metaKey || event.ctrlKey) return
+      const target = event.target as HTMLElement | null
+      if (target?.closest('input, textarea, [contenteditable="true"]')) return
+      event.preventDefault()
+      openPompu()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
-  const animateResponse = useCallback((text: string) => {
-    setIsAnimating(true)
-    setDisplayedResponse('')
-    let i = 0
-    const interval = setInterval(() => {
-      if (i < text.length) {
-        setDisplayedResponse(text.slice(0, i + 1))
-        i++
-      } else {
-        clearInterval(interval)
-        setIsAnimating(false)
-        setDisplayedResponse('')
-        setMessages((prev) => [...prev, { type: 'response', content: text }])
-      }
-    }, 14)
-    return () => clearInterval(interval)
+  const addReply = useCallback((reply: PompuReply) => {
+    setMessages((current) => [...current, { type: 'response', content: reply.message, actions: reply.actions }])
   }, [])
 
-  const pushHistory = (q: string) => {
-    setHistory((h) => (h[h.length - 1] === q ? h : [...h, q]))
-    setHistoryIdx(null)
+  const startBooking = useCallback(() => {
+    setBooking(true)
+  }, [])
+
+  // External triggers (CommandPalette, Contact, hero buttons).
+  useEffect(() => {
+    const onOpen = (event: Event) => {
+      const detail = (event as CustomEvent<PompuOpenDetail>).detail ?? {}
+      if (variant === 'hero') document.getElementById('pompu')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      if (detail.book) startBooking()
+      else if (detail.prompt) submitRef.current(detail.prompt)
+      focusInput()
+    }
+    window.addEventListener('pompu:open', onOpen)
+    return () => window.removeEventListener('pompu:open', onOpen)
+  }, [variant, startBooking, focusInput])
+
+  const runAction = (action: PompuAction) => {
+    if (action.kind === 'book') return startBooking()
+    if (action.kind === 'scroll') {
+      onMinimize?.()
+      document.querySelector(action.target)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      return
+    }
+    window.open(action.target, '_blank', 'noopener,noreferrer')
   }
 
+  const conversationHistory = (): HistoryMessage[] =>
+    messages
+      .filter((m): m is Message & { type: 'user' | 'response' } => m.type === 'user' || m.type === 'response')
+      .slice(-8)
+      .map((m) => ({ role: m.type === 'user' ? 'user' : 'model', content: m.content }))
+
   const handleSubmit = async (query: string) => {
-    if (!query.trim() || isTyping || isAnimating) return
-
+    if (!query.trim() || isTyping) return
     const userMessage = query.trim()
+    const slash = userMessage.toLowerCase()
     setInput('')
-    pushHistory(userMessage)
-    setMessages((prev) => [...prev, { type: 'user', content: userMessage }])
+    setHistory((current) => (current.at(-1) === userMessage ? current : [...current, userMessage]))
+    setHistoryIdx(null)
 
-    // Slash-command short-circuit — no network hit.
-    const slashKey = userMessage.toLowerCase()
-    if (slashKey in SLASH_COMMANDS) {
-      const reply = SLASH_COMMANDS[slashKey]
-      if (reply === '__CLEAR__') {
-        setMessages([{ type: 'system', content: mood.greeting }])
-        return
-      }
-      if (slashKey === '/carrot') {
-        window.dispatchEvent(new CustomEvent('pompu:carrot-rain'))
-      }
-      animateResponse(reply)
+    if (slash === '/clear') {
+      setMessages([{ type: 'system', content: mood.greeting }])
+      setBooking(false)
+      try { sessionStorage.removeItem(SESSION_KEY) } catch {}
+      return
+    }
+
+    setMessages((current) => [...current, { type: 'user', content: userMessage }])
+    if (slash === '/carrot') window.dispatchEvent(new CustomEvent('pompu:carrot-rain'))
+
+    const command = SLASH_COMMANDS[slash]
+    if (command) {
+      addReply(commandReply(command))
+      if (command === 'book') startBooking()
       return
     }
 
     setIsTyping(true)
     try {
-      const res = await fetch('/api/chat', {
+      const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userMessage }),
+        body: JSON.stringify({ message: userMessage, history: conversationHistory() }),
       })
-
-      const data = await res.json()
-      setIsTyping(false)
-
-      if (data.error) {
-        setMessages((prev) => [...prev, { type: 'error', content: data.error }])
-      } else {
-        animateResponse(data.reply)
-      }
+      const data = (await response.json()) as { reply?: PompuReply }
+      const reply = data.reply ?? commandReply('contact')
+      addReply(reply)
+      // A clear "book me in" request opens the picker straight away.
+      if (reply.intent === 'booking') startBooking()
     } catch {
+      addReply(commandReply('contact'))
+    } finally {
       setIsTyping(false)
-      setMessages((prev) => [
-        ...prev,
-        { type: 'error', content: 'connection wobbled. try once more?' },
-      ])
     }
   }
+  submitRef.current = handleSubmit
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleSubmit(input)
-      return
-    }
-    if (e.key === 'ArrowUp') {
-      if (history.length === 0) return
-      e.preventDefault()
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') return void handleSubmit(input)
+    if (event.key === 'Escape' && onMinimize) return onMinimize()
+    if (event.key === 'ArrowUp') {
+      if (!history.length) return
+      event.preventDefault()
       const next = historyIdx === null ? history.length - 1 : Math.max(0, historyIdx - 1)
       setHistoryIdx(next)
       setInput(history[next])
-      return
     }
-    if (e.key === 'ArrowDown') {
-      if (historyIdx === null) return
-      e.preventDefault()
+    if (event.key === 'ArrowDown' && historyIdx !== null) {
+      event.preventDefault()
       const next = historyIdx + 1
       if (next >= history.length) {
         setHistoryIdx(null)
@@ -178,87 +215,79 @@ export default function Terminal() {
     }
   }
 
-  const handleTerminalClick = () => {
-    inputRef.current?.focus()
-  }
-
-  const showSuggestions = messages.length <= 1 && !isTyping && !isAnimating
-  const earTwitch = isTyping || isAnimating || input.length > 0
-  const [isFocused, setIsFocused] = useState(false)
-  const inputDisabled = isTyping || isAnimating
-  const showBlockCursor = isFocused && !inputDisabled
+  const showSuggestions = messages.length <= 1 && !isTyping && !booking
+  const lastResponseIdx = messages.map((m) => m.type).lastIndexOf('response')
+  const chip = 'tag-interactive text-[10.5px] font-medium px-2 py-0.5 rounded-full border border-[var(--accent)]/40 text-[var(--accent)]'
 
   return (
     <div
-      className="pompu-card rounded-xl overflow-hidden flex flex-col relative group/terminal transition-all duration-300"
-      style={{
-        height: 'clamp(220px, 30vh, 300px)',
-        background: 'var(--bg-card)',
-        border: '1px solid var(--border-color)',
+      id="pompu"
+      className={`pompu-card rounded-xl overflow-hidden flex flex-col relative h-full ${variant === 'dock' ? 'pompu-card--dock' : ''}`}
+      style={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)' }}
+      onClick={(event) => {
+        if (!(event.target as HTMLElement).closest(INTERACTIVE)) inputRef.current?.focus({ preventScroll: true })
       }}
-      onClick={handleTerminalClick}
     >
-      {/* Header — slim, native to the page */}
-      <div
-        className="flex items-center gap-2 px-3.5 py-2 shrink-0"
-        style={{ borderBottom: '1px solid var(--border-color)' }}
-      >
-        <Rabbit
-          className={`w-[14px] h-[14px] text-[var(--accent)] ${earTwitch ? 'ear-twitch' : ''}`}
-          aria-hidden
-        />
+      <div className="flex items-center gap-2 px-3.5 py-2 shrink-0" style={{ borderBottom: '1px solid var(--border-color)' }}>
+        <Rabbit className={`w-[14px] h-[14px] text-[var(--accent)] ${isTyping || input ? 'ear-twitch' : ''}`} aria-hidden />
         <span className="text-[12px] font-mono text-[var(--text-primary)] tracking-wide">pompu</span>
         <span className="text-[11px] text-[var(--text-muted)] font-mono">·</span>
-        <span className="text-[11px] text-[var(--text-muted)] font-mono italic">{mood.label}</span>
-
-        <span className="ml-auto flex items-center gap-1 text-[10px] text-[var(--text-muted)] font-mono">
-          <kbd className="px-1 py-[1px] rounded border border-[var(--border-color)]">/</kbd>
-          <span>focus</span>
-        </span>
+        <span className="text-[11px] text-[var(--text-muted)] font-mono italic">{booking ? 'booking' : mood.label}</span>
+        <div className="ml-auto flex items-center gap-2">
+          {!booking && (
+            <button onClick={startBooking} className="flex items-center gap-1 text-[10.5px] font-mono text-[var(--accent)] hover:opacity-80" title="Book a call with Vysyakh">
+              <CalendarPlus className="w-3 h-3" aria-hidden /> book
+            </button>
+          )}
+          {onMinimize ? (
+            <button onClick={onMinimize} className="text-[var(--text-muted)] hover:text-[var(--accent)]" aria-label="Minimise Pompu" title="Minimise (esc)">
+              <Minus className="w-3.5 h-3.5" />
+            </button>
+          ) : (
+            <span className="hidden sm:flex items-center gap-1 text-[10px] text-[var(--text-muted)] font-mono">
+              <kbd className="px-1 py-[1px] rounded border border-[var(--border-color)]">/</kbd>focus
+            </span>
+          )}
+        </div>
       </div>
 
-      {/* Messages */}
-      <div
-        ref={scrollRef}
-        className="flex-1 overflow-y-auto px-3.5 py-2.5 space-y-2 pompu-scroll font-mono text-[12.5px] leading-[1.65] relative"
-      >
-        {/* Carrot watermark — quiet, decorative */}
-        <span
-          aria-hidden
-          className="pointer-events-none select-none absolute right-2 bottom-1 text-[44px] opacity-[0.06] leading-none"
-        >
-          🥕
-        </span>
-        {messages.map((msg, i) => (
-          <div key={i} className="animate-fade-in-up" style={{ animationDelay: `${i * 0.03}s` }}>
-            {msg.type === 'system' && (
+      <div ref={scrollRef} data-lenis-prevent className="flex-1 overflow-y-auto overscroll-contain px-3.5 py-2.5 space-y-2 pompu-scroll font-mono text-[12.5px] leading-[1.65] relative" aria-live="polite">
+        <span aria-hidden className="pointer-events-none select-none absolute right-2 bottom-1 text-[44px] opacity-[0.06] leading-none">🥕</span>
+        {messages.map((message, index) => (
+          <div key={`${message.type}-${index}`} className="animate-fade-in-up" style={{ animationDelay: `${Math.min(index, 4) * 0.03}s` }}>
+            {message.type === 'system' && (
               <div className="text-[var(--text-muted)] italic text-[11.5px] flex items-start gap-1.5">
                 <Rabbit className="w-3 h-3 mt-[3px] text-[var(--accent)] shrink-0" aria-hidden />
-                <span>{msg.content}</span>
+                <span>{message.content}</span>
               </div>
             )}
-            {msg.type === 'user' && (
+            {message.type === 'user' && (
               <div className="mt-1.5">
                 <span className="text-[var(--accent)] neon-glow">❯</span>
-                <span className="text-[var(--text-primary)] ml-1.5">{msg.content}</span>
+                <span className="text-[var(--text-primary)] ml-1.5">{message.content}</span>
               </div>
             )}
-            {msg.type === 'response' && (
-              <div
-                className="text-[var(--text-secondary)] leading-[1.7] whitespace-pre-wrap ml-3 py-0.5 flex items-start gap-1.5"
-                style={{ borderLeft: '2px solid var(--accent-soft-35)', paddingLeft: '8px' }}
-              >
-                <Rabbit className="w-3 h-3 mt-[3px] text-[var(--accent)] shrink-0" aria-hidden />
-                <span>{msg.content}</span>
+            {message.type === 'response' && (
+              <div className="ml-3 py-0.5" style={{ borderLeft: '2px solid var(--accent-soft-35)', paddingLeft: '8px' }}>
+                <div className="text-[var(--text-secondary)] leading-[1.7] whitespace-pre-wrap flex items-start gap-1.5">
+                  <Rabbit className="w-3 h-3 mt-[3px] text-[var(--accent)] shrink-0" aria-hidden />
+                  <span>{message.content}</span>
+                </div>
+                {(message.actions?.length ?? 0) > 0 && index === lastResponseIdx && !booking ? (
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {message.actions!.map((action) => (
+                      <button key={`${action.label}-${action.target}`} onClick={() => runAction(action)} className={chip}>
+                        {action.label}
+                        {action.kind === 'book' ? <CalendarPlus className="inline w-2.5 h-2.5 ml-1" aria-hidden /> : <ArrowUpRight className="inline w-2.5 h-2.5 ml-1" aria-hidden />}
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
               </div>
-            )}
-            {msg.type === 'error' && (
-              <div className="text-[#b04040] text-[11.5px]">✗ {msg.content}</div>
             )}
           </div>
         ))}
 
-        {/* Typing indicator */}
         {isTyping && (
           <div className="flex items-center gap-1.5 mt-1 ml-3 text-[var(--text-muted)]">
             <Rabbit className="w-3 h-3 text-[var(--accent)] ear-twitch" aria-hidden />
@@ -268,99 +297,50 @@ export default function Terminal() {
           </div>
         )}
 
-        {/* Animated response */}
-        {isAnimating && displayedResponse && (
-          <div
-            className="text-[var(--text-secondary)] leading-[1.7] whitespace-pre-wrap ml-3 py-0.5 flex items-start gap-1.5"
-            style={{ borderLeft: '2px solid var(--accent)', paddingLeft: '8px' }}
-          >
-            <Rabbit className="w-3 h-3 mt-[3px] text-[var(--accent)] ear-twitch shrink-0" aria-hidden />
-            <span>
-              {displayedResponse}
-              <span className="cursor-blink text-[var(--accent)] ml-0.5">▎</span>
-            </span>
-          </div>
+        {booking && (
+          <BookingWidget
+            onCancel={() => setBooking(false)}
+            onBooked={(summary) => {
+              setBooking(false)
+              addReply({ message: summary, intent: 'booking' })
+              window.dispatchEvent(new CustomEvent('pompu:carrot-rain'))
+            }}
+          />
         )}
 
-        {/* Suggestion chips — same shape as the experience/project tags */}
         {showSuggestions && (
           <div className="flex flex-wrap gap-1.5 pt-2">
             {SUGGESTIONS.map((s) => (
-              <button
-                key={s}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  handleSubmit(s)
-                }}
-                className="tag-interactive text-[11px] font-medium px-2.5 py-0.5 rounded-full border border-[var(--accent)]/40 text-[var(--accent)] cursor-pointer"
-              >
-                {s}
-              </button>
+              <button key={s} onClick={() => handleSubmit(s)} className={chip}>{s}</button>
             ))}
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                handleSubmit('/carrot')
-              }}
-              className="text-[11px] font-medium px-2.5 py-0.5 rounded-full border border-dashed border-[var(--accent)]/40 text-[var(--accent)]/80 cursor-pointer hover:bg-[var(--accent)]/5 transition-colors"
-              title="try it"
-            >
-              <span aria-hidden className="mr-0.5">🥕</span>/carrot
+            <button onClick={startBooking} className={chip}>
+              Book a call <CalendarPlus className="inline w-2.5 h-2.5 ml-0.5" aria-hidden />
             </button>
           </div>
         )}
       </div>
 
-      {/* Input — terminal-style: invisible real input layered under a styled
-          fake render so we can show a true block cursor right after the text. */}
-      <div
-        className="flex items-center px-3.5 py-2 shrink-0"
-        style={{
-          borderTop: '1px solid var(--border-color)',
-          background: 'var(--accent-soft-05)',
-        }}
-      >
+      <div className="flex items-center px-3.5 py-2 shrink-0" style={{ borderTop: '1px solid var(--border-color)', background: 'var(--accent-soft-05)' }}>
         <span className="text-[var(--accent)] text-[12.5px] font-mono neon-glow">❯</span>
-
-        <div className="relative flex-1 ml-2 h-[18px] font-mono text-[12.5px] leading-[18px]">
-          {/* Visible: fake input (typed text + block caret) */}
-          <div
-            aria-hidden
-            className="pointer-events-none whitespace-pre overflow-hidden"
-          >
-            {input ? (
-              <span className="text-[var(--text-primary)]">{input}</span>
-            ) : (
-              <span className="text-[var(--text-muted)]">
-                {inputDisabled ? 'pompu is thinking…' : 'ask pompu anything (/help)'}
-              </span>
-            )}
-            {showBlockCursor && (
-              <span className="cursor-blink text-[var(--accent)]">▎</span>
-            )}
-          </div>
-
-          {/* Invisible: real input — owns keyboard, selection, focus state */}
-          <input
-            ref={inputRef}
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
-            disabled={inputDisabled}
-            aria-label="Ask Pompu"
-            spellCheck={false}
-            autoComplete="off"
-            className="pompu-input absolute inset-0 w-full bg-transparent outline-none border-none m-0 p-0 font-mono text-[12.5px] leading-[18px]"
-            style={{
-              color: 'transparent',
-              caretColor: 'transparent',
-              WebkitTextFillColor: 'transparent',
-            }}
-          />
-        </div>
+        <input
+          ref={inputRef}
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          // Never disable: a disabled input drops focus, so the visitor's next
+          // keystrokes would land on the page (spaces scroll it). Sending is
+          // blocked in handleSubmit while a reply is pending instead.
+          aria-busy={isTyping}
+          aria-label="Ask Pompu"
+          spellCheck={false}
+          autoComplete="off"
+          placeholder={isTyping ? 'pompu is thinking…' : 'ask about the work, or say "book a call"'}
+          className="pompu-input flex-1 ml-2 bg-transparent outline-none border-none m-0 p-0 font-mono text-[12.5px] leading-[18px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)]"
+        />
+        {isFocused && <span aria-hidden className="cursor-blink text-[var(--accent)]">▎</span>}
       </div>
     </div>
   )

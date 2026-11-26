@@ -24,6 +24,8 @@ const SLASH_COMMANDS: Record<string, string> = {
   '/systems': 'systems',
   '/skills': 'skills',
   '/contact': 'contact',
+  '/garden': 'garden',
+  '/writing': 'writing',
   '/photography': 'photography',
   '/resume': 'resume',
   '/book': 'book',
@@ -137,6 +139,11 @@ export default function Terminal({
     if (action.kind === 'scroll') {
       onMinimize?.()
       document.querySelector(action.target)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      return
+    }
+    if (action.kind === 'route') {
+      onMinimize?.()
+      window.location.assign(action.target)
       return
     }
     window.open(action.target, '_blank', 'noopener,noreferrer')

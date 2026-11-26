@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 import {
   Search,
   Briefcase,
@@ -12,6 +13,7 @@ import {
   Mail,
   Coffee,
   Camera,
+  Sprout,
   Rabbit,
   Workflow,
 } from 'lucide-react'
@@ -32,6 +34,11 @@ function scrollToId(id: string) {
   el.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
+function goSection(id: string) {
+  if (window.location.pathname === '/') scrollToId(id)
+  else window.location.href = `/#${id}`
+}
+
 const focusPompu = () => openPompu()
 
 export default function CommandPalette() {
@@ -39,22 +46,30 @@ export default function CommandPalette() {
   const [query, setQuery] = useState('')
   const [active, setActive] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
+  const pathname = usePathname()
+  const router = useRouter()
+  const onHome = pathname === '/'
 
   const items: Item[] = useMemo(
     () => [
-      { id: 'pompu', label: 'Ask Pompu', hint: 'questions about the work', icon: Rabbit, run: focusPompu },
-      { id: 'book', label: 'Book a call', hint: '15 or 30 min, in-chat', icon: CalendarDays, run: () => openPompu({ book: true }) },
-      { id: 'experience', label: 'The story', hint: 'timeline + live résumé', icon: Briefcase, run: () => scrollToId('experience') },
-      { id: 'systems', label: 'The platform', hint: 'builder · gateway · evals · analytics', icon: Workflow, run: () => scrollToId('systems') },
-      { id: 'notes', label: 'Writing', hint: 'Substack', icon: BookOpen, run: () => scrollToId('notes') },
-      { id: 'photography', label: 'Photography', hint: 'frames + Google Photos', icon: Camera, run: () => scrollToId('photography') },
-      { id: 'contact', label: 'Send a message', hint: 'contact form', icon: Mail, run: () => scrollToId('contact') },
+      ...(onHome
+        ? [
+            { id: 'pompu', label: 'Ask Pompu', hint: 'questions about the work', icon: Rabbit, run: focusPompu },
+            { id: 'book', label: 'Book a call', hint: '15 or 30 min, in-chat', icon: CalendarDays, run: () => openPompu({ book: true }) },
+          ]
+        : []),
+      { id: 'experience', label: 'The story', hint: 'timeline + live résumé', icon: Briefcase, run: () => goSection('experience') },
+      { id: 'systems', label: 'The platform', hint: 'builder · gateway · evals · analytics', icon: Workflow, run: () => goSection('systems') },
+      { id: 'garden', label: 'Garden', hint: 'notes + ideas', icon: Sprout, run: () => router.push('/garden') },
+      { id: 'writing', label: 'Writing', hint: 'Substack essays', icon: BookOpen, run: () => router.push('/writing') },
+      { id: 'photography', label: 'Photography', hint: 'Google Photos gallery', icon: Camera, run: () => router.push('/photography') },
+      { id: 'contact', label: 'Send a message', hint: 'contact form', icon: Mail, run: () => goSection('contact') },
       { id: 'resume', label: 'Open résumé PDF', hint: 'new tab', icon: FileText, run: () => window.open(profile.links.resume, '_blank') },
       { id: 'coffee', label: 'Buy me a coffee', hint: 'support the work', icon: Coffee, run: () => window.open(profile.links.coffee, '_blank') },
       { id: 'github', label: 'GitHub', hint: 'github.com/vkajith', icon: Github, run: () => window.open('https://github.com/vkajith', '_blank') },
       { id: 'linkedin', label: 'LinkedIn', hint: 'vysyakh-ajith', icon: Linkedin, run: () => window.open('https://linkedin.com/in/vysyakh-ajith', '_blank') },
     ],
-    []
+    [onHome, router]
   )
 
   const filtered = useMemo(() => {
@@ -143,7 +158,7 @@ export default function CommandPalette() {
                 runAt(active)
               }
             }}
-            placeholder="jump to… (try: book, platform, résumé)"
+            placeholder="jump to… (try: book, garden, résumé)"
             className="flex-1 bg-transparent outline-none text-[14px] font-sans text-[var(--text-primary)] placeholder:text-[var(--text-muted)]"
           />
           <kbd className="text-[10px] font-mono px-1.5 py-0.5 rounded border border-[var(--border-color)] text-[var(--text-muted)]">

@@ -2,6 +2,10 @@ import { Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import { Analytics } from '@vercel/analytics/react'
 import SmoothScroll from './components/SmoothScroll'
+import SiteFooter from './components/SiteFooter'
+import ThemeToggle from './components/ThemeToggle'
+import CommandPalette from './components/CommandPalette'
+import CarrotRain from './components/CarrotRain'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -75,8 +79,14 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} ${jetbrains.variable} font-sans antialiased`}>
         <SmoothScroll>
-          {children}
+          <div className="noise-overlay min-h-screen flex flex-col">
+            <div className="flex-1">{children}</div>
+            <SiteFooter />
+          </div>
           <Analytics />
+          <ThemeToggle />
+          <CommandPalette />
+          <CarrotRain />
         </SmoothScroll>
       </body>
     </html>

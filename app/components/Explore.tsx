@@ -45,7 +45,7 @@ export default async function Explore() {
                   Notes on creativity, tech philosophy, systems, and AI.
                 </p>
                 <div className="mt-5 space-y-2">
-                  {gardenNotes.slice(0, 3).map((note) => (
+                  {gardenNotes.slice(0, 4).map((note) => (
                     <div key={note.slug} className="flex items-baseline gap-2">
                       <span className="font-mono text-[9px] text-[var(--accent)]">{note.number}</span>
                       <span className="truncate text-[11.5px] text-[var(--text-secondary)]">{note.title}</span>
@@ -105,13 +105,13 @@ export default async function Explore() {
               <div className="grid aspect-[16/10] grid-cols-2 grid-rows-2 gap-1 p-1">
                 {photos.length > 0 ? (
                   photos.map((photo) => (
-                    <div key={photo.id} className="min-h-0 overflow-hidden rounded-[4px] bg-[var(--accent-soft-05)]">
+                    <div key={photo.id} className="relative min-h-0 overflow-hidden rounded-[4px] bg-[var(--accent-soft-05)]">
                       <img
                         src={proxiedPhotoSrc(photo, 480)}
                         alt=""
                         loading="lazy"
                         decoding="async"
-                        className="h-full w-full object-cover"
+                        className="absolute inset-0 h-full w-full object-cover"
                       />
                     </div>
                   ))

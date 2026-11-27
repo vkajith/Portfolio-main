@@ -7,12 +7,18 @@ Keep this file up to date when you change the active file graph, conventions, or
 
 ## 1. What this is
 
-Personal portfolio for **Vysyakh Ajith**, positioned as an **AI Agent Platform Engineer** (LLM gateways, agent orchestration, evals, analytics at scale). A single-page Next.js 15 app that reads top to bottom as a story:
+Personal portfolio for **Vysyakh Ajith**, positioned as an **AI Agent Platform Engineer** (LLM gateways, agent orchestration, evals, analytics at scale). A narrative Next.js 15 home page plus dedicated creative routes:
 
 1. **Hero** — positioning, stats, CTAs, and **Pompu** (a quirky rabbit concierge chat) as the centrepiece.
 2. **The story** — a scroll-driven timeline (oldest → newest) beside a sticky **résumé paper** that "writes" each entry as its chapter scrolls into view.
 3. **The platform** — an explorable loop: Agent Builder → LLM Gateway → Agentic Analytics → LLM-as-Judge → Agent Harness.
-4. **Building** (projects, data-driven from `profile.ts`) → **Photography** (Google Photos album) → **Writing** (Substack) → **Contact**.
+4. **Building** (projects, data-driven from `profile.ts`) → **Explore** (Garden / Writing / Photography tiles) → **Contact**.
+
+Dedicated routes keep the home page simple:
+
+- `/garden` + `/garden/[slug]` — a digital garden of creativity and tech-philosophy notes.
+- `/writing` — Substack essays with cover images.
+- `/photography` — the full Google Photos gallery and lightbox.
 
 Once the hero scrolls away, Pompu docks into a bottom-right pill/panel and follows the visitor. Pompu answers from verified facts and **books real 15/30-minute calls on Vysyakh's Cal.com calendar inside the chat**.
 
@@ -43,8 +49,14 @@ Everything reachable from `app/page.tsx` and `app/layout.tsx`. If a file isn't l
 
 ```
 app/
-├── layout.tsx                  Root layout, fonts, metadata/OG, JSON-LD, pre-hydration theme script.
-├── page.tsx                    The only route: Hero → CareerStory → SelectedSystems → Projects → Notes → Contact.
+├── layout.tsx                  Root layout: fonts, metadata/OG, JSON-LD, theme script, shared footer + globals.
+├── template.tsx                Route-enter animation wrapper.
+├── page.tsx                    Home: Hero → CareerStory → SelectedSystems → Projects → Explore → Contact.
+├── garden/
+│   ├── page.tsx                Garden index (notes + tag filter).
+│   └── [slug]/page.tsx         Garden note detail (SSG + reading progress).
+├── writing/page.tsx            Writing index (Substack RSS + covers).
+├── photography/page.tsx        Full Google Photos gallery.
 ├── globals.css                 Palette tokens (incl. --paper-*), animations, dock/timeline/résumé/platform styles.
 ├── icon.svg / apple-icon.svg   Carrot favicons.
 ├── opengraph-image.tsx         Generated OG card. robots.ts / sitemap.ts for SEO.
@@ -52,6 +64,8 @@ app/
 ├── lib/
 │   ├── profile.ts              ★ SINGLE SOURCE OF TRUTH: identity, roles, highlights, platform, skills, projects.
 │   ├── context.ts              Pompu's prompt + grounded fallback topics, GENERATED from profile.ts.
+│   ├── garden.ts               Garden note data + tags (add a note here; index/route/sitemap/Pompu follow).
+│   ├── writing.ts              Substack RSS parsing + Post type (server-only fetch).
 │   ├── cal.ts                  Server-only Cal.com v2 helpers (config from CAL_COM_BOOKING_URL, rate limit).
 │   ├── photography.ts          Server fetch + parser for the public Google Photos album; photo URL helpers.
 │   └── pompuEvents.ts          openPompu({ book?, prompt? }) — window event to summon Pompu from anywhere.
@@ -73,11 +87,16 @@ app/
 │   ├── ResumePaper.tsx         Sticky one-page résumé; the chapter in view expands, others collapse to one line.
 │   ├── SelectedSystems.tsx     Platform loop (click to explore) + infra card; "ask pompu about this".
 │   ├── Projects.tsx            Renders `projects` from profile.ts; returns null when empty.
-│   ├── Photography.tsx         Server section: fetches the Google Photos album + renders the gallery shell.
+│   ├── Explore.tsx             Home tile grid: Garden, Writing, Photography previews.
+│   ├── ExploreShortcuts.tsx    G/W/P keyboard shortcuts on the home page (input-aware).
+│   ├── SubpageShell.tsx        Shared subpage layout: back link, sticky context rail, content.
+│   ├── GardenGrid.tsx          Client note grid + tag filter.
+│   ├── WritingGrid.tsx         Server essay card grid with RSS cover images.
+│   ├── ReadingProgress.tsx     Fixed reading-progress line on garden notes.
 │   ├── PhotoGallery.tsx        Client gallery: editorial grid + keyboard lightbox.
+│   ├── SiteFooter.tsx          Shared footer: routes, copyright, coffee.
 │   ├── ToolIcon.tsx            Mono brand mark for a tool name (react-icons/si); null when unknown.
 │   ├── Reveal.tsx              One-shot scroll reveal (IntersectionObserver) with reduced-motion fallback.
-│   ├── Notes.tsx               Substack RSS (server component, revalidates hourly; cover images from enclosures).
 │   ├── Contact.tsx             Contact form + "book a call with Pompu".
 │   ├── CommandPalette.tsx / CarrotRain.tsx / ThemeToggle.tsx / SmoothScroll.tsx
 ```
@@ -96,7 +115,7 @@ npm run lint       # next lint, must be clean
 npx tsc --noEmit   # type-check, must be clean
 ```
 
-Build size budget: the `/` route is **27.7 kB** (First Load 133 kB) — the booking widget, scroll story, résumé paper, platform loop, tool marks, and photo gallery are client components. If a change pushes it by more than ~5 kB, justify it in the PR. (The +7.8 kB from 19.9 kB covers the three project cards, eight Simple Icons marks, the conversational chat bubbles, the photography gallery, and the scroll-reveal wrapper.)
+Build size budget: the `/` route is **25.6 kB** (First Load 135 kB) — the booking widget, scroll story, résumé paper, and platform loop are client components. `/garden` is 1.93 kB, `/photography` 2.77 kB, `/writing` 559 B, and each note is 565 B. If a change pushes `/` by more than ~5 kB, justify it in the PR. (The home gallery/feed moved to routes, which trimmed the home route; the First Load includes the shared layout: footer, theme toggle, command palette, and carrot rain.)
 
 ---
 
@@ -176,6 +195,7 @@ Existing keyframes live in `globals.css`. Reuse before inventing:
 - `glitchShift` — RGB-shift glitch on `.glitch-on-hover` (dark mode only)
 - `themeWipeIn` — circular clip-path reveal driven by the View Transitions API on theme swap
 - `nodeSweep` — accent line sweep on the active platform node
+- `pageEnter` — route-enter fade/lift in `app/template.tsx`
 - `Reveal` (`components/Reveal.tsx`) — one-shot fade/lift when a section enters the viewport; automatically disabled for reduced-motion users
 - `.stagger-children > *` — staggered fade-in for lists
 
@@ -233,10 +253,11 @@ Reply intent 'booking' or a "book" action → BookingWidget opens inside the cha
 
 - **New role, bullet, metric, skill:** edit `roles` / `skills` / `profile.stats` in `app/lib/profile.ts`. The timeline, résumé paper, and Pompu all update.
 - **Projects:** add entries to `projects` in `profile.ts`; the "Building" section appears automatically.
-- **Photography:** set `GOOGLE_PHOTOS_ALBUM_URL` to the full public Google Photos share URL. The server fetch parses the album page and revalidates hourly; the section shows an empty state if the album is missing or unreachable. The intro copy lives in `photography` in `profile.ts`.
-- **Writing:** `Notes.tsx` reads `SUBSTACK_RSS_URL`, takes the latest 3 items, and pulls each post's cover image from the RSS `<enclosure>`/`<media:*>` tag (falling back to the first `<img>` in the item). Revalidates hourly.
+- **Photography:** set `GOOGLE_PHOTOS_ALBUM_URL` to the full public Google Photos share URL. `/photography` fetches and parses the album; the home Explore tile fetches the first four photos. The section shows an empty state if the album is missing or unreachable.
+- **Writing:** `lib/writing.ts` reads `SUBSTACK_RSS_URL`, takes the latest posts, and pulls each cover image from the RSS `<enclosure>`/`<media:*>` tag (falling back to the first `<img>` in the item). `/writing` and the home Explore tile share the fetch. Revalidates hourly.
+- **Garden:** add a note to `gardenNotes` in `app/lib/garden.ts`. The index, `/garden/[slug]` static params, sitemap, and Pompu's garden facts all derive from it. Tags live in `gardenTags`.
 - **Platform loop:** edit `platform` in `profile.ts` (5 nodes fits the grid; change `grid-template-columns` in `.platform-loop` if you change the count).
-- **New section:** create `app/components/<Name>.tsx` with `<section id="…" className="px-5 sm:px-10 lg:px-16 py-20"><div className="max-w-6xl mx-auto">`, mount it in `page.tsx`, add a ⌘K item in `CommandPalette.tsx`, and a scroll action/topic in `context.ts`.
+- **New section:** create `app/<route>/page.tsx` using `SubpageShell` for the back link + sticky rail, add the route to `sitemap.ts`, a ⌘K item in `CommandPalette.tsx`, and a route action/topic in `context.ts`. Add a home `Explore` tile if it should be discoverable from `/`.
 
 ---
 
@@ -260,6 +281,9 @@ For a global side-effect (like `/carrot`), dispatch a `CustomEvent` and listen f
 - **CareerStory steps are `lg:min-h-[78vh]`**; the active step is decided by a thin band (`rootMargin: '-45% 0px -50% 0px'`). The sticky résumé is desktop-only; mobile shows full bullets in each step.
 - **The résumé must fit one viewport with the largest chapter (Observe.AI) expanded** at 1440×900; if you add bullets, check it still does.
 - **`/` hotkey** is owned by `Terminal.tsx`; **⌘K** by `CommandPalette.tsx`.
+- **The root layout owns the shared chrome:** noise overlay, `SiteFooter`, `ThemeToggle`, `CommandPalette`, and `CarrotRain`. Don't duplicate them in pages.
+- **Subpages use `SubpageShell`** for the back link and sticky context rail. Keep the back path explicit.
+- **Home Explore shortcuts (`G`/`W`/`P`) are input-aware.** Keep the guard so they never fire while someone is typing in Pompu or a form.
 - **Pompu input has no focus ring** — focus is the blinking `▎` cursor.
 - **`<html suppressHydrationWarning>`** + the pre-hydration theme script stay in `<head>`.
 
@@ -273,6 +297,7 @@ For a global side-effect (like `/carrot`), dispatch a `CustomEvent` and listen f
 - Reduced-motion users get a static page — extend the `@media (prefers-reduced-motion: reduce)` block in `globals.css` whenever you add a new animation.
 - Color contrast: moss `#6B7F3E` on cream `#F5F0E8` is 4.6:1 (AA for normal text). Don't lighten the accent below `--accent-light` (`#8BA34E`) for body text.
 - The photography lightbox is a `role="dialog"` with `aria-modal`, arrow-key navigation, `Escape` to close, and focus returned to the tile that opened it.
+- Garden tag filters use `aria-pressed`; garden note pages have one `h1` and an `aria-hidden` reading-progress line.
 
 ---
 
@@ -284,6 +309,8 @@ For a global side-effect (like `/carrot`), dispatch a `CustomEvent` and listen f
 - **Lenis smooth scroll** intercepts programmatic `window.scrollTo`; use `scrollIntoView` on elements, which Lenis handles.
 - **`profile.links.resume` points at the hosted Google Drive PDF**, not `public/resume.pdf`. The site renders the résumé from `profile.ts`; update the Drive link there when the PDF changes. Keep the local file only as a fallback.
 - **Google Photos share links must be the resolved `photos.google.com/share/<id>?key=<key>` URL.** The short `photos.app.goo.gl/...` link is a JS-only shell and returns no photo rows to the server. `lib/photography.ts` parses `lh3.googleusercontent.com/pw/...",W,H,` rows and revalidates hourly. The grid requests sized CDN URLs through `/api/photo` (allow-listed, cached) because Google's CDN is flaky under concurrent sized requests; the lightbox uses a 1600px rendition.
+- **Writing and Photography live on their own routes.** Don't re-import the old `Notes.tsx`/`Photography.tsx` sections onto `/`; the home page uses `Explore` tiles and the routes own the full content. This keeps the home bundle smaller.
+- **Garden notes are the source of truth.** `lib/garden.ts` feeds the index, note SSG pages, sitemap, and Pompu facts; add a note there rather than hand-writing route content.
 - **Don't run `next build` while `next dev` is running** — both write `.next/`, and the dev server ends up serving an unstyled page.
 - **Gemini latency is spiky** (1–7s, occasional 503). The chat route aborts at 4.5s and serves the grounded reply.
 

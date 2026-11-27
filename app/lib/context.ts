@@ -1,8 +1,9 @@
 import { infraProject, platform, profile, projects, roles, skills } from './profile'
+import { gardenNotes } from './garden'
 
 export type PompuAction = {
   label: string
-  kind: 'scroll' | 'link' | 'book'
+  kind: 'scroll' | 'link' | 'book' | 'route'
   target: string
 }
 
@@ -17,9 +18,10 @@ type KnowledgeTopic = PompuReply & { keywords: string[] }
 const BOOK: PompuAction = { label: 'Book a time', kind: 'book', target: 'book' }
 const SYSTEMS: PompuAction = { label: 'Explore the platform', kind: 'scroll', target: '#systems' }
 const EXPERIENCE: PompuAction = { label: 'Walk the timeline', kind: 'scroll', target: '#experience' }
-const WRITING: PompuAction = { label: 'Read the writing', kind: 'scroll', target: '#notes' }
+const WRITING: PompuAction = { label: 'Read the writing', kind: 'route', target: '/writing' }
 const CONTACT: PompuAction = { label: 'Send a message', kind: 'scroll', target: '#contact' }
-const PHOTOGRAPHY: PompuAction = { label: 'See the photography', kind: 'scroll', target: '#photography' }
+const PHOTOGRAPHY: PompuAction = { label: 'See the photography', kind: 'route', target: '/photography' }
+const GARDEN: PompuAction = { label: 'Enter the garden', kind: 'route', target: '/garden' }
 const RESUME: PompuAction = { label: 'Open resume', kind: 'link', target: profile.links.resume }
 
 // ---- Prompt: generated from profile.ts so it can never drift from the site ----
@@ -36,6 +38,11 @@ const skillFacts = Object.entries(skills).map(([group, list]) => `${group}: ${li
 const projectFacts = projects.length
   ? projects.map((p) => `• ${p.title}: ${p.summary}${p.link ? ` (${p.link})` : ''}`).join('\n')
   : '• No side projects are featured right now. Do not mention HabitAct or older projects.'
+
+const gardenFacts = gardenNotes
+  .slice(0, 4)
+  .map((note) => `• ${note.title} — ${note.tags.join(', ')}`)
+  .join('\n')
 
 export const VYSYAKH_CONTEXT = `
 You are Pompu — Vysyakh Ajith's rabbit-shaped portfolio concierge. You help visitors (often recruiters, founders, and engineers) understand what Vysyakh builds and get in touch.
@@ -67,11 +74,14 @@ ${skillFacts}
 PROJECTS
 ${projectFacts}
 
+GARDEN (notes on creativity, tech philosophy, systems, and AI)
+${gardenFacts}
+
 PHOTOGRAPHY
-- Outside the terminal, Vysyakh shoots photography. A curated gallery of frames lives in the photography section, with the full album linked on Google Photos.
+- Outside the terminal, Vysyakh shoots photography. A curated gallery lives at /photography, with the full album linked on Google Photos.
 
 CONTACT
-- Email ${profile.links.email}, GitHub ${profile.links.github}, LinkedIn ${profile.links.linkedin}. Writing on Substack: ${profile.links.substack}.
+- Email ${profile.links.email}, GitHub ${profile.links.github}, LinkedIn ${profile.links.linkedin}. Writing on Substack: ${profile.links.substack} and at /writing.
 - Pompu can book a 15 or 30 minute call on Vysyakh's real calendar right inside this chat. When someone wants to talk, hire, collaborate, or meet, offer that.
 - If someone wants to support the work, there's a Buy Me a Coffee link: ${profile.links.coffee}.
 
@@ -161,10 +171,10 @@ const topics: KnowledgeTopic[] = [
     keywords: ['skill', 'stack', 'tech', 'language', 'framework', 'tools', 'know'],
   },
   {
-    message: `Vysyakh writes about building AI-native products and agent platforms on Substack. the latest pieces are linked in the writing section.`,
+    message: `Vysyakh writes about building AI-native products and agent platforms on Substack. The latest pieces are at /writing and on Substack.`,
     intent: 'writing',
     actions: [WRITING],
-    keywords: ['blog', 'writing', 'substack', 'article', 'post', 'notes', 'read'],
+    keywords: ['blog', 'writing', 'substack', 'article', 'post', 'read'],
   },
   {
     message: `Pompu can book you a 15 or 30 minute call on Vysyakh's real calendar right here — pick a slot and you're done.`,
@@ -201,16 +211,24 @@ const topics: KnowledgeTopic[] = [
     actions: [PHOTOGRAPHY],
     keywords: ['photography', 'photo', 'photos', 'camera', 'shoot', 'gallery', 'frame', 'lens'],
   },
+  {
+    message: `The garden is where the stray thoughts go — notes on creativity, tech philosophy, systems, and AI. Start with "${gardenNotes[0].title}" or wander the index at /garden.`,
+    intent: 'portfolio',
+    actions: [GARDEN],
+    keywords: ['garden', 'notes', 'creativity', 'philosophy', 'thinking', 'ideas', 'essay', 'essays'],
+  },
 ]
 
 export const FALLBACK_RESPONSES: Record<string, string> = {
-  help: 'Ask about the agent platform, the career timeline, skills, writing, or photography. Try /book to grab 15 or 30 minutes on Vysyakh\'s calendar, or /clear to start over.',
+  help: 'Ask about the agent platform, the career timeline, skills, garden, writing, or photography. Try /book to grab 15 or 30 minutes on Vysyakh\'s calendar, or /clear to start over.',
   about: topics[0].message,
   experience: topics[7].message,
   systems: `he builds the loop behind production AI agents: ${platform.map((p) => p.name).join(' → ')}. ${observe.chapter}`,
   skills: topics[11].message,
   contact: 'Email, GitHub, LinkedIn — or book a call. Pompu can do the booking part right here.',
-  photography: 'The photography gallery sits between the projects and the writing — or open the full album on Google Photos.',
+  garden: 'The garden is where the stray thoughts go — notes on creativity, tech philosophy, systems, and AI. It lives at /garden.',
+  writing: 'The writing page has the latest essays — or read the archive on Substack.',
+  photography: 'The photography gallery is at /photography — or open the full album on Google Photos.',
   resume: 'The résumé sits beside the timeline as you scroll — or grab the PDF.',
   book: topics[13].message,
   pompu: 'Pompu is Vysyakh\'s rabbit-shaped portfolio concierge: here to connect the right question to the right piece of work, and to book you onto his calendar.',
@@ -223,6 +241,8 @@ const COMMAND_ACTIONS: Record<string, PompuAction[]> = {
   systems: [SYSTEMS],
   skills: [EXPERIENCE],
   contact: [CONTACT, BOOK],
+  garden: [GARDEN],
+  writing: [WRITING],
   photography: [PHOTOGRAPHY],
   resume: [EXPERIENCE, RESUME],
   book: [BOOK],
